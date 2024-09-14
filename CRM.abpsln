@@ -1,0 +1,7 @@
+{
+  "modules": {
+    "CRM": {
+      "path": "CRM.abpmdl"
+    }
+  }
+}
