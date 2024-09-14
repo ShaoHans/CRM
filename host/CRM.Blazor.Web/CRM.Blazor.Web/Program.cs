@@ -1,12 +1,26 @@
-using CRM.Blazor.Web.Client.Pages;
 using CRM.Blazor.Web.Components;
+using Radzen;
+using CRM.Blazor.Web;
+using CRM.Blazor.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
+builder
+    .Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
+
+// Add Radzen.Blazor services
+builder.Services.AddRadzenComponents();
+builder.Services.AddRadzenQueryStringThemeService();
+//builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+//builder.Services.AddScoped<CompilerService>();
+builder.Services.AddScoped<ExampleService>();
+builder.Services.AddScoped<NorthwindService>();
+builder.Services.AddScoped<NorthwindODataService>();
+builder.Services.AddSingleton<GitHubService>();
 
 var app = builder.Build();
 
