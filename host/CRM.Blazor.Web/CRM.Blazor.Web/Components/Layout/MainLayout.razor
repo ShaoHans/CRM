@@ -3,7 +3,7 @@
 @inherits LayoutComponentBase
 @inject ThemeService ThemeService
 @inject QueryStringThemeService QueryStringThemeService
-@inject ExampleService ExampleService
+@inject MenuService MenuService
 @inject NavigationManager UriHelper
 @inject IJSRuntime JSRuntime
 @inject TooltipService TooltipService
@@ -63,9 +63,9 @@
                                 <RadzenLink Path="https://github.com/radzenhq/radzen-blazor" target="_blank">Source Code</RadzenLink> licensed under
                                 <RadzenLink Path="https://github.com/radzenhq/radzen-blazor/blob/master/LICENSE" target="_blank">MIT</RadzenLink>
                             </RadzenText>
-                            <RadzenText TextStyle="TextStyle.Body1" TextAlign="TextAlign.Center">
+                            @* <RadzenText TextStyle="TextStyle.Body1" TextAlign="TextAlign.Center">
                                 <Social />
-                            </RadzenText>
+                            </RadzenText> *@
                         </RadzenColumn>
                     </RadzenRow>
                 </RadzenColumn>
@@ -284,10 +284,10 @@
     bool configSidebarExpanded = false;
     bool rendered;
 
-    IEnumerable<Example> examples;
+    IEnumerable<Menu> examples;
     protected override void OnInitialized()
     {
-        examples = ExampleService.Examples;
+        examples = MenuService.Examples;
 
         System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
     }
@@ -304,7 +304,7 @@
     {
         var term = args.Value.ToString();
 
-        examples = string.IsNullOrEmpty(term) ? ExampleService.Examples : ExampleService.Filter(term);
+        examples = string.IsNullOrEmpty(term) ? MenuService.Examples : MenuService.Filter(term);
     }
 
     void ChangeTheme(object value)

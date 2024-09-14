@@ -17,7 +17,7 @@ builder.Services.AddRadzenQueryStringThemeService();
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 //builder.Services.AddScoped<CompilerService>();
-builder.Services.AddScoped<ExampleService>();
+builder.Services.AddScoped<MenuService>();
 builder.Services.AddScoped<NorthwindService>();
 builder.Services.AddScoped<NorthwindODataService>();
 builder.Services.AddSingleton<GitHubService>();
