@@ -7,7 +7,6 @@
 @inject NavigationManager UriHelper
 @inject IJSRuntime JSRuntime
 @inject TooltipService TooltipService
-@inject DialogService DialogService
 
 <RadzenComponents />
 
@@ -57,26 +56,11 @@
                     <RadzenRow class="rz-mx-auto" Style="max-width: 1600px;">
                         <RadzenColumn Size="12">
                             @Body
-                            <RadzenCard class="rz-mt-12 rz-display-block rz-p-12">
-                                <RadzenRow AlignItems="AlignItems.Center" Gap="0px">
-                                    <RadzenColumn SizeMD="12" SizeLG="6" class="rz-px-8 rz-py-5 rz-text-align-start">
-                                        <RadzenText TextStyle="TextStyle.DisplayH4" TagName="TagName.H2" class="rz-mb-4" Style="line-height: 1.2; text-wrap: balance;">Supercharge your Blazor development with Radzen Blazor Studio</RadzenText>
-                                        <RadzenText TextStyle="TextStyle.H6" TagName="TagName.P" class="rz-text-secondary-color" Style="line-height: 1.5; text-wrap: balance;">Radzen Blazor Studio is a software development environment that empowers developers to design, build and deploy Blazor applications without the traditional hurdles. Write less code and get more done.</RadzenText>
-                                        <RadzenStack Orientation="Orientation.Horizontal" Gap="1rem" Wrap="FlexWrap.Wrap" class="rz-mt-8 rz-mb-4">
-                                            <RadzenButton Text="See in Action" Icon="play_circle" ButtonStyle="ButtonStyle.Primary" Size="ButtonSize.Large" Click=@ShowVideoDialog />
-                                            <NavLink class="rz-button rz-button-lg rz-base rz-shade-default rz-text-align-center" href="https://www.radzen.com/blazor-studio/" target="_blank"><RadzenIcon Icon="open_in_new" /> Learn More</NavLink>
-                                        </RadzenStack>
-                                    </RadzenColumn>
-                                    <RadzenColumn SizeMD="12" SizeLG="6" class="rz-px-8 rz-py-5 rz-py-xl-12 rz-pr-xl-12">
-                                        <RadzenImage Path="images/radzen-blazor-studio.png" class="rz-m-0" Style="width: 100%" AlternateText=">Radzen Blazor Studio" Click=@ShowVideoDialog />
-                                    </RadzenColumn>
-                                </RadzenRow>
-                            </RadzenCard>
-                            <RadzenText TextStyle="TextStyle.Body1" TextAlign="TextAlign.Center" class="rz-mt-12">
+                            @* <RadzenText TextStyle="TextStyle.Body1" TextAlign="TextAlign.Center" class="rz-mt-12">
                                 <span>Radzen Blazor Components, &copy; 2018-2024 Radzen.</span> <br />
                                 <RadzenLink Path="https://github.com/radzenhq/radzen-blazor" target="_blank">Source Code</RadzenLink> licensed under
                                 <RadzenLink Path="https://github.com/radzenhq/radzen-blazor/blob/master/LICENSE" target="_blank">MIT</RadzenLink>
-                            </RadzenText>
+                            </RadzenText> *@
                             @* <RadzenText TextStyle="TextStyle.Body1" TextAlign="TextAlign.Center">
                                 <Social />
                             </RadzenText> *@
@@ -87,6 +71,11 @@
         </RadzenContentContainer>
     </ChildContent>
 </RadzenBody>
+@* <RadzenFooter>
+        <RadzenText TextAlign="TextAlign.Center">
+            <span>Smart CRM &copy; 2018-2024 SHZ.</span>
+    </RadzenText>
+</RadzenFooter> *@
 <RadzenSidebar @ref="sidebar0" @bind-Expanded="@sidebarExpanded" class="demos-sidebar" style="display: flex; flex-direction: column">
     <div style="padding: 1rem">
         <RadzenTextBox id="find" Placeholder="Find menu ..." type="search" @oninput="@FilterPanelMenu" style="width: 100%" class="rz-search-input" aria-label="find" />
@@ -282,9 +271,9 @@
 
 @if (!rendered)
 {
-<div class="rz-app-loading">
-    <div class="logo-loading"></div>
-</div>
+    <div class="rz-app-loading">
+        <div class="logo-loading"></div>
+    </div>
 }
 
 @code {
@@ -359,15 +348,4 @@
         <NavLink class="rz-button rz-button-sm rz-secondary rz-text-align-center" href="/themes">Learn more</NavLink>
     </RadzenStack>
 </div>, options);
-
-    async Task ShowVideoDialog()
-    {
-        await DialogService.OpenAsync("Create new Blazor app", ds =>
-        @<div class="embed-container">
-            <iframe src="https://www.youtube.com/embed/_F-CUWxYvCA?&rel=0" frameborder="0" allowfullscreen=""></iframe>
-        </div>, new DialogOptions() {
-                  Width = "50%",
-                  Resizable = true
-              });
-    }
 }
