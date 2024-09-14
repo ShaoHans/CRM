@@ -93,25 +93,25 @@
     </div>
     <div style="flex: 1; overflow: auto">
     <RadzenPanelMenu Match="NavLinkMatch.Prefix">
-                @foreach (var category in menus)
+        @foreach (var category in menus)
         {
-            <NavigationItem @key=category @bind-Expanded=@category.Expanded Example=@category>
+            <NavigationItem @key=category @bind-Expanded=@category.Expanded Menu=@category>
                 @if (category.Children != null)
                 {
                     @foreach (var example in category.Children)
                     {
                         if (example.Children != null)
                         {
-                            <NavigationItem @key=example @bind-Expanded=@example.Expanded Example=@example>
+                            <NavigationItem @key=example @bind-Expanded=@example.Expanded Menu=@example>
                             @foreach (var child in example.Children)
                             {
-                                <NavigationItem @key=child @bind-Expanded=@child.Expanded Example=@child />
+                                <NavigationItem @key=child @bind-Expanded=@child.Expanded Menu=@child />
                             }
                             </NavigationItem>
                         }
                         else
                         {
-                            <NavigationItem @key=example @bind-Expanded=@example.Expanded Example=@example />
+                            <NavigationItem @key=example @bind-Expanded=@example.Expanded Menu=@example />
                         }
                     }
                 }
