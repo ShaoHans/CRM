@@ -2,7 +2,7 @@ namespace CRM.Blazor.Web.Services;
 
 public class MenuService
 {
-    Menu[] allExamples =
+    Menu[] allMenus =
     [
         new Menu
         {
@@ -2300,15 +2300,15 @@ public class MenuService
         },
     ];
 
-    public IEnumerable<Menu> Examples
+    public IEnumerable<Menu> Menus
     {
-        get { return allExamples; }
+        get { return allMenus; }
     }
 
     public IEnumerable<Menu> Filter(string term)
     {
         if (string.IsNullOrEmpty(term))
-            return allExamples;
+            return allMenus;
 
         bool contains(string value) =>
             value != null && value.Contains(term, StringComparison.OrdinalIgnoreCase);
@@ -2319,7 +2319,7 @@ public class MenuService
         bool deepFilter(Menu example) =>
             filter(example) || example.Children?.Any(filter) == true;
 
-        return Examples
+        return Menus
             .Where(category => category.Children?.Any(deepFilter) == true || filter(category))
             .Select(category => new Menu
             {
@@ -2349,7 +2349,7 @@ public class MenuService
             return e.SelectMany(c => c.Children != null ? Flatten(c.Children) : new[] { c });
         }
 
-        return Flatten(Examples)
+        return Flatten(Menus)
             .FirstOrDefault(example =>
                 example.Path == uri.AbsolutePath || $"/{example.Path}" == uri.AbsolutePath
             );

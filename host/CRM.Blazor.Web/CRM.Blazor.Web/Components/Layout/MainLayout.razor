@@ -93,7 +93,7 @@
     </div>
     <div style="flex: 1; overflow: auto">
     <RadzenPanelMenu Match="NavLinkMatch.Prefix">
-        @foreach (var category in examples)
+                @foreach (var category in menus)
         {
             <NavigationItem @key=category @bind-Expanded=@category.Expanded Example=@category>
                 @if (category.Children != null)
@@ -298,10 +298,10 @@
     bool configSidebarExpanded = false;
     bool rendered;
 
-    IEnumerable<Menu> examples;
+    IEnumerable<Menu> menus;
     protected override void OnInitialized()
     {
-        examples = MenuService.Examples;
+        menus = MenuService.Menus;
 
         System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
     }
@@ -318,7 +318,7 @@
     {
         var term = args.Value.ToString();
 
-        examples = string.IsNullOrEmpty(term) ? MenuService.Examples : MenuService.Filter(term);
+        menus = string.IsNullOrEmpty(term) ? MenuService.Menus : MenuService.Filter(term);
     }
 
     void ChangeTheme(object value)
