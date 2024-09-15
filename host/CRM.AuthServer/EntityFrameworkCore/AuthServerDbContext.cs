@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.EntityFrameworkCore;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
@@ -15,7 +16,8 @@ public class AuthServerDbContext : AbpDbContext<AuthServerDbContext>
     public AuthServerDbContext(DbContextOptions<AuthServerDbContext> options)
         : base(options)
     {
-
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        AppContext.SetSwitch("Npgsql.DisableDateTimeInfinityConversions", true);
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

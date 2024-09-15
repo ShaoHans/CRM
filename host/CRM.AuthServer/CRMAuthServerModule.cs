@@ -47,6 +47,8 @@ using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Volo.Abp.UI.Navigation.Urls;
+using CRM.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRM;
 
@@ -232,16 +234,27 @@ public class CRMAuthServerModule : AbpModule
         app.UseAbpSerilogEnrichers();
         app.UseConfiguredEndpoints();
 
+        await MigrateAsync(context);
         await SeedData(context);
+    }
+
+    private async Task MigrateAsync(ApplicationInitializationContext context)
+    {
+        var factory = new AuthServerDbContextFactory();
+        using var db = factory.CreateDbContext([]);
+        await db.Database.EnsureCreatedAsync();
+        await db.Database.MigrateAsync();
     }
 
     private async Task SeedData(ApplicationInitializationContext context)
     {
-        using (var scope = context.ServiceProvider.CreateScope())
-        {
-            await scope.ServiceProvider
-                .GetRequiredService<IDataSeeder>()
-                .SeedAsync();
-        }
+        // IDataSeeder接口的实现类是DataSeeder，此类会获取到所有实现IDataSeedContributor接口的类，调用类的SeedAsync方法进行种子数据的插入
+        var seedContext = new DataSeedContext();
+        seedContext.WithProperty(IdentityDataSeedContributor.AdminEmailPropertyName, "admin@crm.com");
+        seedContext.WithProperty(IdentityDataSeedContributor.AdminPasswordPropertyName, "2024@09$14&Start");
+        using var scope = context.ServiceProvider.CreateScope();
+        await scope.ServiceProvider
+            .GetRequiredService<IDataSeeder>()
+            .SeedAsync(seedContext);
     }
 }
