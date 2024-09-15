@@ -32,22 +32,27 @@
     <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.SettingManagement.Application" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.SettingManagement.HttpApi" Version="8.3.0" />
-    <PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" Version="8.3.0" />
+		<PackageReference Include="Volo.Abp.SettingManagement.Web" Version="8.3.0" />
+		<PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.OpenIddict.EntityFrameworkCore" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.PermissionManagement.Application" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.PermissionManagement.HttpApi" Version="8.3.0" />
+		<PackageReference Include="Volo.Abp.PermissionManagement.Web" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.Identity.EntityFrameworkCore" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.Identity.Application" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.Identity.HttpApi" Version="8.3.0" />
+		<PackageReference Include="Volo.Abp.Identity.Web" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.PermissionManagement.Domain.Identity" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.FeatureManagement.EntityFrameworkCore" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.FeatureManagement.Application" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.FeatureManagement.HttpApi" Version="8.3.0" />
+		<PackageReference Include="Volo.Abp.FeatureManagement.Web" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.TenantManagement.Application" Version="8.3.0" />
     <PackageReference Include="Volo.Abp.TenantManagement.HttpApi" Version="8.3.0" />
-    <ProjectReference Include="..\..\src\CRM.Application.Contracts\CRM.Application.Contracts.csproj" />
+		<PackageReference Include="Volo.Abp.TenantManagement.Web" Version="8.3.0" />
+		<ProjectReference Include="..\..\src\CRM.Application.Contracts\CRM.Application.Contracts.csproj" />
     <ProjectReference Include="..\CRM.Host.Shared\CRM.Host.Shared.csproj" />
   </ItemGroup>
 

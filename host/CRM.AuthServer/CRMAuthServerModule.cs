@@ -1,17 +1,19 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using CRM.EntityFrameworkCore;
+using CRM.MultiTenancy;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using CRM.MultiTenancy;
-using StackExchange.Redis;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Validation.AspNetCore;
+using StackExchange.Redis;
 using Volo.Abp;
 using Volo.Abp.Account;
 using Volo.Abp.Account.Web;
@@ -33,6 +35,7 @@ using Volo.Abp.FeatureManagement;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
+using Volo.Abp.Identity.Web;
 using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
@@ -41,14 +44,15 @@ using Volo.Abp.PermissionManagement;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.HttpApi;
 using Volo.Abp.PermissionManagement.Identity;
+using Volo.Abp.PermissionManagement.Web;
 using Volo.Abp.SettingManagement;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
+using Volo.Abp.SettingManagement.Web;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Volo.Abp.TenantManagement.Web;
 using Volo.Abp.UI.Navigation.Urls;
-using CRM.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace CRM;
 
@@ -66,24 +70,29 @@ namespace CRM;
     typeof(AbpIdentityEntityFrameworkCoreModule),
     typeof(AbpIdentityApplicationModule),
     typeof(AbpIdentityHttpApiModule),
+    typeof(AbpIdentityWebModule),
     typeof(AbpOpenIddictEntityFrameworkCoreModule),
     typeof(AbpPermissionManagementDomainIdentityModule),
     typeof(AbpPermissionManagementEntityFrameworkCoreModule),
     typeof(AbpPermissionManagementApplicationModule),
     typeof(AbpPermissionManagementHttpApiModule),
+    typeof(AbpPermissionManagementWebModule),
     typeof(AbpSettingManagementEntityFrameworkCoreModule),
     typeof(AbpSettingManagementApplicationModule),
     typeof(AbpSettingManagementHttpApiModule),
+    typeof(AbpSettingManagementWebModule),
     typeof(AbpFeatureManagementEntityFrameworkCoreModule),
     typeof(AbpFeatureManagementApplicationModule),
     typeof(AbpFeatureManagementHttpApiModule),
+    typeof(AbpFeatureManagementWebModule),
     typeof(AbpTenantManagementEntityFrameworkCoreModule),
     typeof(AbpTenantManagementApplicationModule),
     typeof(AbpTenantManagementHttpApiModule),
+    typeof(AbpTenantManagementWebModule),
     typeof(CRMApplicationContractsModule),
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpSwashbuckleModule)
-    )]
+)]
 public class CRMAuthServerModule : AbpModule
 {
     public override void PreConfigureServices(ServiceConfigurationContext context)
@@ -104,20 +113,21 @@ public class CRMAuthServerModule : AbpModule
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
 
-        context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
+        context.Services.ForwardIdentityAuthenticationForBearer(
+            OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme
+        );
 
         Configure<AbpDbContextOptions>(options =>
         {
             options.UseNpgsql();
         });
 
-        context.Services.AddAbpSwaggerGen(
-            options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "CRM API", Version = "v1" });
-                options.DocInclusionPredicate((docName, description) => true);
-                options.CustomSchemaIds(type => type.FullName);
-            });
+        context.Services.AddAbpSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "CRM API", Version = "v1" });
+            options.DocInclusionPredicate((docName, description) => true);
+            options.CustomSchemaIds(type => type.FullName);
+        });
 
         Configure<AbpLocalizationOptions>(options =>
         {
@@ -145,8 +155,8 @@ public class CRMAuthServerModule : AbpModule
 
         Configure<AbpAuditingOptions>(options =>
         {
-                //options.IsEnabledForGetRequests = true;
-                options.ApplicationName = "AuthServer";
+            //options.IsEnabledForGetRequests = true;
+            options.ApplicationName = "AuthServer";
         });
 
         Configure<AppUrlOptions>(options =>
@@ -177,8 +187,8 @@ public class CRMAuthServerModule : AbpModule
             {
                 builder
                     .WithOrigins(
-                        configuration["App:CorsOrigins"]?
-                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                        configuration["App:CorsOrigins"]
+                            ?.Split(",", StringSplitOptions.RemoveEmptyEntries)
                             .Select(o => o.RemovePostFix("/"))
                             .ToArray() ?? Array.Empty<string>()
                     )
@@ -195,7 +205,9 @@ public class CRMAuthServerModule : AbpModule
 #endif
     }
 
-    public async override Task OnApplicationInitializationAsync(ApplicationInitializationContext context)
+    public override async Task OnApplicationInitializationAsync(
+        ApplicationInitializationContext context
+    )
     {
         var app = context.GetApplicationBuilder();
         var env = context.GetEnvironment();
@@ -250,11 +262,15 @@ public class CRMAuthServerModule : AbpModule
     {
         // IDataSeeder接口的实现类是DataSeeder，此类会获取到所有实现IDataSeedContributor接口的类，调用类的SeedAsync方法进行种子数据的插入
         var seedContext = new DataSeedContext();
-        seedContext.WithProperty(IdentityDataSeedContributor.AdminEmailPropertyName, "admin@crm.com");
-        seedContext.WithProperty(IdentityDataSeedContributor.AdminPasswordPropertyName, "2024@09$14&Start");
+        seedContext.WithProperty(
+            IdentityDataSeedContributor.AdminEmailPropertyName,
+            "admin@crm.com"
+        );
+        seedContext.WithProperty(
+            IdentityDataSeedContributor.AdminPasswordPropertyName,
+            "2024@09$14&Start"
+        );
         using var scope = context.ServiceProvider.CreateScope();
-        await scope.ServiceProvider
-            .GetRequiredService<IDataSeeder>()
-            .SeedAsync(seedContext);
+        await scope.ServiceProvider.GetRequiredService<IDataSeeder>().SeedAsync(seedContext);
     }
 }
