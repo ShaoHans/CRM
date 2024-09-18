@@ -68,8 +68,4 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Razor" Version="6.0.33" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Components\Pages\" />
-  </ItemGroup>
-
 </Project>

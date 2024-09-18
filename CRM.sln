@@ -45,9 +45,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.Host.Shared", "host\CRM
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.Installer", "src\CRM.Installer\CRM.Installer.csproj", "{BE39FD00-745B-4049-8161-FC129817CBE4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.Blazor.Web", "host\CRM.Blazor.Web\CRM.Blazor.Web\CRM.Blazor.Web.csproj", "{5B91579E-7F9E-4B31-B065-B184385A2D39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.Blazor.Web", "host\CRM.Blazor.Web\CRM.Blazor.Web\CRM.Blazor.Web.csproj", "{5B91579E-7F9E-4B31-B065-B184385A2D39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CRM.Blazor.Web.Client", "host\CRM.Blazor.Web\CRM.Blazor.Web.Client\CRM.Blazor.Web.Client.csproj", "{D447D27A-E2A8-48E2-9B55-E0BBD7235026}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRM.Blazor.Web.Client", "host\CRM.Blazor.Web\CRM.Blazor.Web.Client\CRM.Blazor.Web.Client.csproj", "{D447D27A-E2A8-48E2-9B55-E0BBD7235026}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

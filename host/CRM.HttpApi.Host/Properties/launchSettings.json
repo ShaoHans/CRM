@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "CRM.DemoApp": {
+    "Kestrel": {
       "commandName": "Project",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:44388",
