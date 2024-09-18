@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using IdentityModel;
+using CRM.EntityFrameworkCore;
+using CRM.MultiTenancy;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
@@ -10,14 +11,11 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using CRM.EntityFrameworkCore;
-using CRM.MultiTenancy;
-using StackExchange.Redis;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Authentication.JwtBearer;
 using Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.Autofac;
@@ -29,7 +27,6 @@ using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.MultiTenancy;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
-using Volo.Abp.Security.Claims;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.Swashbuckle;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
@@ -52,10 +49,9 @@ namespace CRM;
     typeof(AbpTenantManagementEntityFrameworkCoreModule),
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpSwashbuckleModule)
-    )]
+)]
 public class CRMHttpApiHostModule : AbpModule
 {
-
     public override void ConfigureServices(ServiceConfigurationContext context)
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
@@ -75,25 +71,52 @@ public class CRMHttpApiHostModule : AbpModule
         {
             Configure<AbpVirtualFileSystemOptions>(options =>
             {
-                options.FileSets.ReplaceEmbeddedByPhysical<CRMDomainSharedModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}src{0}CRM.Domain.Shared", Path.DirectorySeparatorChar)));
-                options.FileSets.ReplaceEmbeddedByPhysical<CRMDomainModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}src{0}CRM.Domain", Path.DirectorySeparatorChar)));
-                options.FileSets.ReplaceEmbeddedByPhysical<CRMApplicationContractsModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}src{0}CRM.Application.Contracts", Path.DirectorySeparatorChar)));
-                options.FileSets.ReplaceEmbeddedByPhysical<CRMApplicationModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}src{0}CRM.Application", Path.DirectorySeparatorChar)));
+                options.FileSets.ReplaceEmbeddedByPhysical<CRMDomainSharedModule>(
+                    Path.Combine(
+                        hostingEnvironment.ContentRootPath,
+                        string.Format(
+                            "..{0}..{0}src{0}CRM.Domain.Shared",
+                            Path.DirectorySeparatorChar
+                        )
+                    )
+                );
+                options.FileSets.ReplaceEmbeddedByPhysical<CRMDomainModule>(
+                    Path.Combine(
+                        hostingEnvironment.ContentRootPath,
+                        string.Format("..{0}..{0}src{0}CRM.Domain", Path.DirectorySeparatorChar)
+                    )
+                );
+                options.FileSets.ReplaceEmbeddedByPhysical<CRMApplicationContractsModule>(
+                    Path.Combine(
+                        hostingEnvironment.ContentRootPath,
+                        string.Format(
+                            "..{0}..{0}src{0}CRM.Application.Contracts",
+                            Path.DirectorySeparatorChar
+                        )
+                    )
+                );
+                options.FileSets.ReplaceEmbeddedByPhysical<CRMApplicationModule>(
+                    Path.Combine(
+                        hostingEnvironment.ContentRootPath,
+                        string.Format(
+                            "..{0}..{0}src{0}CRM.Application",
+                            Path.DirectorySeparatorChar
+                        )
+                    )
+                );
             });
         }
 
         context.Services.AddAbpSwaggerGenWithOAuth(
             configuration["AuthServer:Authority"]!,
-            new Dictionary<string, string>
-            {
-                {"CRM", "CRM API"}
-            },
+            new Dictionary<string, string> { { "CRM", "CRM API" } },
             options =>
             {
-                options.SwaggerDoc("v1", new OpenApiInfo {Title = "CRM API", Version = "v1"});
+                options.SwaggerDoc("v1", new OpenApiInfo { Title = "CRM API", Version = "v1" });
                 options.DocInclusionPredicate((docName, description) => true);
                 options.CustomSchemaIds(type => type.FullName);
-            });
+            }
+        );
 
         Configure<AbpLocalizationOptions>(options =>
         {
@@ -119,11 +142,14 @@ public class CRMHttpApiHostModule : AbpModule
             options.Languages.Add(new LanguageInfo("el", "el", "Ελληνικά"));
         });
 
-        context.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        context
+            .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddAbpJwtBearer(options =>
             {
                 options.Authority = configuration["AuthServer:Authority"];
-                options.RequireHttpsMetadata = configuration.GetValue<bool>("AuthServer:RequireHttpsMetadata");
+                options.RequireHttpsMetadata = configuration.GetValue<bool>(
+                    "AuthServer:RequireHttpsMetadata"
+                );
                 options.Audience = "CRM";
             });
 
@@ -145,8 +171,8 @@ public class CRMHttpApiHostModule : AbpModule
             {
                 builder
                     .WithOrigins(
-                        configuration["App:CorsOrigins"]?
-                            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+                        configuration["App:CorsOrigins"]
+                            ?.Split(",", StringSplitOptions.RemoveEmptyEntries)
                             .Select(o => o.RemovePostFix("/"))
                             .ToArray() ?? Array.Empty<string>()
                     )
