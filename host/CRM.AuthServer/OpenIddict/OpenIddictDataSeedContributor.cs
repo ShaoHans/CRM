@@ -141,6 +141,7 @@ public class OpenIddictDataSeedContributor : IDataSeedContributor, ITransientDep
                 grantTypes: new List<string>
                 {
                     OpenIddictConstants.GrantTypes.AuthorizationCode,
+                    OpenIddictConstants.GrantTypes.Password,
                 },
                 scopes: commonScopes,
                 redirectUri: $"{blazorRootUrl}/authentication/login-callback",
