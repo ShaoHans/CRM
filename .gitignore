@@ -264,6 +264,7 @@ src/CRM.HttpApi.Host/Logs/*
 src/CRM.HttpApi.HostWithIds/Logs/*
 src/CRM.DbMigrator/Logs/*
 src/CRM.Blazor/Logs/*
+src/CRM.Blazor.Web/Logs/*
 src/CRM.Blazor.Tiered/Logs/*
 
 # Use abp install-libs to restore.
@@ -272,3 +273,4 @@ src/CRM.Blazor.Tiered/Logs/*
 # IdentityServer temp files
 tempkey.rsa
 tempkey.jwk
+/src/CRM.Blazor.Web/Logs/logs20240921.txt
