@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <Import Project="..\..\common.props" />
 
@@ -11,6 +11,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\CRM.Application\CRM.Application.csproj" />
     <ProjectReference Include="..\CRM.Domain.Tests\CRM.Domain.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
   </ItemGroup>
 

@@ -1,34 +1,44 @@
 {
+  "template": "app",
+  "imports": {
+    "Volo.Abp.Account": {
+      "version": "8.3.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "8.3.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.Identity": {
+      "version": "8.3.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "8.3.0",
+      "isInstalled": true
+    }
+  },
   "folders": {
     "items": {
       "src": {},
-      "test": {},
-      "host": {}
+      "test": {}
     }
   },
   "packages": {
-    "CRM.Domain.Shared": {
-      "path": "src/CRM.Domain.Shared/CRM.Domain.Shared.abppkg",
-      "folder": "src"
-    },
-    "CRM.Domain": {
-      "path": "src/CRM.Domain/CRM.Domain.abppkg",
-      "folder": "src"
-    },
-    "CRM.Application.Contracts": {
-      "path": "src/CRM.Application.Contracts/CRM.Application.Contracts.abppkg",
-      "folder": "src"
-    },
     "CRM.Application": {
       "path": "src/CRM.Application/CRM.Application.abppkg",
       "folder": "src"
     },
-    "CRM.EntityFrameworkCore": {
-      "path": "src/CRM.EntityFrameworkCore/CRM.EntityFrameworkCore.abppkg",
+    "CRM.Application.Tests": {
+      "path": "test/CRM.Application.Tests/CRM.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "CRM.Domain.Shared": {
+      "path": "src/CRM.Domain.Shared/CRM.Domain.Shared.abppkg",
       "folder": "src"
     },
-    "CRM.MongoDB": {
-      "path": "src/CRM.MongoDB/CRM.MongoDB.abppkg",
+    "CRM.Application.Contracts": {
+      "path": "src/CRM.Application.Contracts/CRM.Application.Contracts.abppkg",
       "folder": "src"
     },
     "CRM.HttpApi": {
@@ -39,41 +49,37 @@
       "path": "src/CRM.HttpApi.Client/CRM.HttpApi.Client.abppkg",
       "folder": "src"
     },
-    "CRM.TestBase": {
-      "path": "test/CRM.TestBase/CRM.TestBase.abppkg",
-      "folder": "test"
-    },
     "CRM.EntityFrameworkCore.Tests": {
       "path": "test/CRM.EntityFrameworkCore.Tests/CRM.EntityFrameworkCore.Tests.abppkg",
       "folder": "test"
     },
-    "CRM.MongoDB.Tests": {
-      "path": "test/CRM.MongoDB.Tests/CRM.MongoDB.Tests.abppkg",
+    "CRM.EntityFrameworkCore": {
+      "path": "src/CRM.EntityFrameworkCore/CRM.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "CRM.TestBase": {
+      "path": "test/CRM.TestBase/CRM.TestBase.abppkg",
       "folder": "test"
     },
     "CRM.Domain.Tests": {
       "path": "test/CRM.Domain.Tests/CRM.Domain.Tests.abppkg",
       "folder": "test"
     },
-    "CRM.Application.Tests": {
-      "path": "test/CRM.Application.Tests/CRM.Application.Tests.abppkg",
-      "folder": "test"
-    },
-    "CRM.HttpApi.Host": {
-      "path": "host/CRM.HttpApi.Host/CRM.HttpApi.Host.abppkg",
-      "folder": "host"
-    },
     "CRM.HttpApi.Client.ConsoleTestApp": {
       "path": "test/CRM.HttpApi.Client.ConsoleTestApp/CRM.HttpApi.Client.ConsoleTestApp.abppkg",
       "folder": "test"
     },
-    "CRM.AuthServer": {
-      "path": "host/CRM.AuthServer/CRM.AuthServer.abppkg",
-      "folder": "host"
+    "CRM.DbMigrator": {
+      "path": "src/CRM.DbMigrator/CRM.DbMigrator.abppkg",
+      "folder": "src"
     },
-    "CRM.Host.Shared": {
-      "path": "host/CRM.Host.Shared/CRM.Host.Shared.abppkg",
-      "folder": "host"
+    "CRM.Blazor": {
+      "path": "src/CRM.Blazor/CRM.Blazor.abppkg",
+      "folder": "src"
+    },
+    "CRM.Domain": {
+      "path": "src/CRM.Domain/CRM.Domain.abppkg",
+      "folder": "src"
     }
   }
 }

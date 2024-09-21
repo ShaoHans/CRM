@@ -1,13 +1,11 @@
-﻿using Volo.Abp.Reflection;
-
 namespace CRM.Permissions;
 
-public class CRMPermissions
+public static class CRMPermissions
 {
     public const string GroupName = "CRM";
 
-    public static string[] GetAll()
-    {
-        return ReflectionHelper.GetPublicConstantsRecursively(typeof(CRMPermissions));
-    }
+
+    
+    //Add your own permission names. Example:
+    //public const string MyPermission1 = GroupName + ".MyPermission1";
 }
