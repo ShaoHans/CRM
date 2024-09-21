@@ -1,5 +1,7 @@
 ﻿@page "/account/login"
 @using CRM.Blazor.Web.Components.Layout
+@using Microsoft.AspNetCore.Identity
+@using Volo.Abp.Identity.AspNetCore
 @inherits LayoutComponentBase
 @layout LoginLayout
 
@@ -18,8 +20,9 @@
             <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-mb-6">
                 Login
             </RadzenText>
-            <RadzenTemplateForm Data=@("SimpleLogin") Action="http://www.google.com">
-                <RadzenLogin AllowRegister="false" AllowResetPassword="false" />
+            <RadzenTemplateForm Data=@("SimpleLogin") Action="/">
+                <RadzenLogin AllowRegister="false" AllowResetPassword="false" Login="(args)=>LoginAsync(args)"
+                             Username="admin" Password="2024@09$14&Start" />
             </RadzenTemplateForm>
         </RadzenCard>
     </RadzenColumn>
@@ -27,5 +30,20 @@
 
 
 @code {
-    
+    [Inject]
+    public AbpSignInManager SignInManager { get; set; }
+
+    [Inject]
+    public NavigationManager NavigationManager { get; set; }
+
+    public async Task LoginAsync(LoginArgs args)
+    {
+        var result = await SignInManager.PasswordSignInAsync(args.Username, args.Password, true, true);
+        if (result.Succeeded)
+        {
+            NavigationManager.NavigateTo("/", true);
+            return;
+        }
+    }
+
 }
