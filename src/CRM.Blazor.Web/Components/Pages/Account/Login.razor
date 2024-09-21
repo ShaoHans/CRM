@@ -31,10 +31,10 @@
 
 @code {
     [Inject]
-    public AbpSignInManager SignInManager { get; set; }
+    public AbpSignInManager SignInManager { get; set; } = null!;
 
     [Inject]
-    public NavigationManager NavigationManager { get; set; }
+    public NavigationManager NavigationManager { get; set; } = null!;
 
     public async Task LoginAsync(LoginArgs args)
     {
@@ -45,5 +45,4 @@
             return;
         }
     }
-
 }

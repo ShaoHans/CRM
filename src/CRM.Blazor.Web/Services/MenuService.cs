@@ -171,6 +171,21 @@ public class MenuService
                 },
             },
         },
+        new Menu
+        {
+            Name = "用户管理",
+            Icon = "&#xe92c",
+            Children =
+            [
+                new Menu
+                {
+                    Name = "用户列表",
+                    Path = "/user/list",
+                    Icon = "&#xe40a",
+                    Tags = new[] { "form", "edit" }
+                },
+            ]
+        }
     ];
 
     public IEnumerable<Menu> Menus

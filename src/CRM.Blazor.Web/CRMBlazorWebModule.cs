@@ -3,7 +3,10 @@ using CRM.Blazor.Web.Services;
 using CRM.EntityFrameworkCore;
 using CRM.Localization;
 using CRM.MultiTenancy;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
@@ -21,6 +24,7 @@ using Volo.Abp.Autofac;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Caching.StackExchangeRedis;
 using Volo.Abp.EntityFrameworkCore.PostgreSql;
+using Volo.Abp.Identity;
 using Volo.Abp.Identity.AspNetCore;
 using Volo.Abp.Identity.EntityFrameworkCore;
 using Volo.Abp.Modularity;
@@ -72,6 +76,15 @@ public class CRMBlazorWebModule : AbpModule
             );
         });
 
+        PreConfigure<IdentityBuilder>(builder =>
+        {
+            builder
+                .AddDefaultTokenProviders()
+                .AddTokenProvider<LinkUserTokenProvider>(LinkUserTokenProviderConsts.LinkUserTokenProviderName)
+                .AddSignInManager<AbpSignInManager>()
+                .AddUserValidator<AbpIdentityUserValidator>();
+        });
+
         PreConfigure<OpenIddictBuilder>(builder =>
         {
             builder.AddValidation(options =>
@@ -82,22 +95,22 @@ public class CRMBlazorWebModule : AbpModule
             });
         });
 
-        if (!hostingEnvironment.IsDevelopment())
-        {
-            PreConfigure<AbpOpenIddictAspNetCoreOptions>(options =>
-            {
-                options.AddDevelopmentEncryptionAndSigningCertificate = false;
-            });
+        //if (!hostingEnvironment.IsDevelopment())
+        //{
+        //    PreConfigure<AbpOpenIddictAspNetCoreOptions>(options =>
+        //    {
+        //        options.AddDevelopmentEncryptionAndSigningCertificate = false;
+        //    });
 
-            PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
-            {
-                serverBuilder.AddProductionEncryptionAndSigningCertificate(
-                    "openiddict.pfx",
-                    "9b26e3c2-ae0a-4c47-bb89-606fcd97cf0b"
-                );
-                serverBuilder.SetIssuer(new Uri(configuration["AuthServer:Authority"]!));
-            });
-        }
+        //    PreConfigure<OpenIddictServerBuilder>(serverBuilder =>
+        //    {
+        //        serverBuilder.AddProductionEncryptionAndSigningCertificate(
+        //            "openiddict.pfx",
+        //            "9b26e3c2-ae0a-4c47-bb89-606fcd97cf0b"
+        //        );
+        //        serverBuilder.SetIssuer(new Uri(configuration["AuthServer:Authority"]!));
+        //    });
+        //}
     }
 
     public override void ConfigureServices(ServiceConfigurationContext context)
@@ -118,7 +131,7 @@ public class CRMBlazorWebModule : AbpModule
             });
         }
 
-        ConfigureAuthentication(context);
+        ConfigureAuthentication(context, configuration);
         ConfigureUrls(configuration);
         ConfigureBundles();
         ConfigureAutoMapper();
@@ -138,10 +151,41 @@ public class CRMBlazorWebModule : AbpModule
         context.Services.AddScoped<NorthwindService>();
         context.Services.AddScoped<NorthwindODataService>();
         context.Services.AddSingleton<GitHubService>();
+
+        //var options = context.Services.ExecutePreConfiguredActions(new AbpIdentityAspNetCoreOptions());
+        //if (options.ConfigureAuthentication)
+        //{
+        //    context.Services
+        //        .AddAuthentication(o =>
+        //        {
+        //            o.DefaultScheme = IdentityConstants.ApplicationScheme;
+        //            o.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+        //        })
+        //        .AddIdentityCookies();
+        //}
     }
 
-    private void ConfigureAuthentication(ServiceConfigurationContext context)
+    private void ConfigureAuthentication(
+        ServiceConfigurationContext context,
+        IConfiguration configuration
+    )
     {
+        context
+            .Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme =
+                    OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
+            })
+            .AddCookie(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                options =>
+                {
+                    options.ExpireTimeSpan = TimeSpan.FromDays(365);
+                    options.IntrospectAccessToken();
+                }
+            );
+
         context.Services.ForwardIdentityAuthenticationForBearer(
             OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme
         );
