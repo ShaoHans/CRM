@@ -1,4 +1,4 @@
-﻿@page "/account/login"
+﻿@page "/login"
 @using CRM.Blazor.Web.Components.Layout
 @using Microsoft.AspNetCore.Identity
 @using Volo.Abp.Identity.AspNetCore
@@ -20,8 +20,8 @@
             <RadzenText TextStyle="TextStyle.H5" TagName="TagName.H2" class="rz-mb-6">
                 Login
             </RadzenText>
-            <RadzenTemplateForm Data=@("SimpleLogin") Action="/">
-                <RadzenLogin AllowRegister="false" AllowResetPassword="false" Login="(args)=>LoginAsync(args)"
+            <RadzenTemplateForm Data=@("SimpleLogin") Method="post" Action="/account/login">
+                <RadzenLogin AllowRegister="false" AllowResetPassword="false" 
                              Username="admin" Password="2024@09$14&Start" />
             </RadzenTemplateForm>
         </RadzenCard>
@@ -31,18 +31,40 @@
 
 @code {
     [Inject]
-    public AbpSignInManager SignInManager { get; set; } = null!;
+    public SignInManager<Volo.Abp.Identity.IdentityUser> SignInManager { get; set; } = null!;
 
     [Inject]
     public NavigationManager NavigationManager { get; set; } = null!;
+
+    [Inject]
+    public UserManager<Volo.Abp.Identity.IdentityUser> UserManager { get; set; } = default!;
+
+    protected override Task OnInitializedAsync()
+    {
+        return base.OnInitializedAsync();
+    }
 
     public async Task LoginAsync(LoginArgs args)
     {
         var result = await SignInManager.PasswordSignInAsync(args.Username, args.Password, true, true);
         if (result.Succeeded)
         {
-            NavigationManager.NavigateTo("/", true);
+            NavigationManager.NavigateTo("/");
             return;
         }
+
+        // var user = await UserManager.FindByNameAsync(args.Username);
+        // if (user != null)
+        // {
+        //     var result = await SignInManager.CheckPasswordSignInAsync(user, args.Password, lockoutOnFailure: true);
+        //     if (result.Succeeded)
+        //     {
+        //         var claimsPrincipal = await SignInManager.CreateUserPrincipalAsync(user);
+
+        //         // 使用 HttpContext 直接设置 Cookie
+        //         await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, claimsPrincipal);
+        //         NavigationManager.NavigateTo("/");  // 成功后跳转到主页
+        //     }
+        // }
     }
 }

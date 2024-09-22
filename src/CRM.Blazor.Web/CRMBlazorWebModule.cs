@@ -15,6 +15,7 @@ using Volo.Abp;
 using Volo.Abp.AspNetCore.Authentication.JwtBearer;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.AntiForgery;
 using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
@@ -130,6 +131,10 @@ public class CRMBlazorWebModule : AbpModule
                 options.DisableTransportSecurityRequirement = true;
             });
         }
+        Configure<AbpAntiForgeryOptions>(options =>
+        {
+            options.AutoValidate = false;
+        });
 
         ConfigureAuthentication(context, configuration);
         ConfigureUrls(configuration);
@@ -181,7 +186,7 @@ public class CRMBlazorWebModule : AbpModule
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 options =>
                 {
-                    options.ExpireTimeSpan = TimeSpan.FromDays(365);
+                    options.ExpireTimeSpan = TimeSpan.FromDays(2);
                     options.IntrospectAccessToken();
                 }
             );
