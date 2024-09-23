@@ -1,13 +1,14 @@
 ﻿@page "/User/List"
-@using Microsoft.AspNetCore.Authentication.Cookies
 @using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.Identity
 @using Volo.Abp.Users
-@attribute [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Policy = "AbpIdentity.Users")]
 
 <RadzenDataGrid Data="@users" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
-                PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" PagingSummaryFormat="@pagingSummaryFormat" 
+                PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" PagingSummaryFormat="@pagingSummaryFormat"
                 Page="@OnPageAsync">
+    <HeaderTemplate>
+        <RadzenButton Text="添加用户"  />
+    </HeaderTemplate>
     <Columns>
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Id)" Title="ID" Width="80px" Visible="false" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.UserName)" Title="用户名" Width="160px" />
@@ -20,9 +21,6 @@
     [Inject]
     public IIdentityUserAppService UserAppService { get; set; } = null!;
 
-    [Inject]
-    public ICurrentUser CurrentUser { get; set; }
-
     string pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
 
     IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30 };
@@ -31,19 +29,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if(CurrentUser.IsAuthenticated)
-        {
-            
-        }
-
         await base.OnInitializedAsync();
-
-
 
         var result = await UserAppService.GetListAsync(new GetIdentityUsersInput
         {
             SkipCount = 0,
-            MaxResultCount = 20
+            MaxResultCount = 20,
         });
 
         users = result.Items;
@@ -51,5 +42,6 @@
 
     private async Task OnPageAsync(PagerEventArgs args)
     {
+        
     }
 }
