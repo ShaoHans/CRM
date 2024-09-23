@@ -2,7 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.Identity
 @using Volo.Abp.Users
-
+<PageTitle>用户列表</PageTitle>
 <RadzenDataGrid Data="@users" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" PagingSummaryFormat="@pagingSummaryFormat"
                 Page="@OnPageAsync">
