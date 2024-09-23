@@ -1,5 +1,9 @@
 ﻿@page "/User/List"
+@using Microsoft.AspNetCore.Authentication.Cookies
+@using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.Identity
+@using Volo.Abp.Users
+@attribute [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Policy = "AbpIdentity.Users")]
 
 <RadzenDataGrid Data="@users" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" PagingSummaryFormat="@pagingSummaryFormat" 
@@ -16,6 +20,9 @@
     [Inject]
     public IIdentityUserAppService UserAppService { get; set; } = null!;
 
+    [Inject]
+    public ICurrentUser CurrentUser { get; set; }
+
     string pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
 
     IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30 };
@@ -24,6 +31,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        if(CurrentUser.IsAuthenticated)
+        {
+            
+        }
+
         await base.OnInitializedAsync();
 
 
