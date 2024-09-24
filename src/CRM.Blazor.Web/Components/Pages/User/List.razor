@@ -14,7 +14,7 @@
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Id)" Title="ID" Width="80px" Visible="false" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.UserName)" Title="用户名" Width="160px" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Email)" Title="邮箱" Width="160px" />
-        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="手机号码" Width="200px" />
+        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="手机号码" Width="160px" />
         <RadzenDataGridColumn Title="启用" Width="60px">
             <Template>
                 <RadzenCheckBox TValue="bool" Value="@(context.IsActive)" ReadOnly="true" />
@@ -25,6 +25,7 @@
                 <RadzenCheckBox TValue="bool" Value="@(context.LockoutEnabled)" ReadOnly="true" />
             </Template>
         </RadzenDataGridColumn>
+        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.CreationTime)" Title="添加时间" Width="160px" />
     </Columns>
 </RadzenDataGrid>
 
