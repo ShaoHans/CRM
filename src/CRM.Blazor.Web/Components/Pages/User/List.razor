@@ -89,10 +89,9 @@
         await DialogService.OpenAsync<Create>("添加用户",
                options: new DialogOptions()
                    {
-                       Resizable = true,
                        Draggable = true,
-                       Width = "700px",
-                       Height = "700px"
+                       Width = "600px",
+                       Height = "740px"
                    });
 
         await LoadUsersAsync();
@@ -104,10 +103,9 @@
                new Dictionary<string, object>() { { "User", user } },
                options: new DialogOptions()
                    {
-                       Resizable = true,
                        Draggable = true,
-                       Width = "700px",
-                       Height = "700px"
+                       Width = "600px",
+                       Height = "740px",
                    });
 
         await LoadUsersAsync();
