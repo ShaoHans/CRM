@@ -1,54 +1,82 @@
-﻿<RadzenRow Gap="2rem" RowGap="2rem" class="rz-m-0 rz-m-md-12">
-    <RadzenColumn Size="12" SizeMD="4">
-        <RadzenCard>
-            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Default TextBox</RadzenText>
-            <RadzenTextBox Change=@(args => OnChange(args, "TextBox")) Style="width: 100%" aria-label="Default TextBox" />
-        </RadzenCard>
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="4">
-        <RadzenCard>
-            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Placeholder</RadzenText>
-            <RadzenTextBox Placeholder="Search..." Change=@(args => OnChange(args, "TextBox with placeholder")) Style="width: 100%" aria-label="TextBox with placeholder" />
-        </RadzenCard>
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="4">
-        <RadzenCard>
-            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">5 characters maximum</RadzenText>
-            <RadzenTextBox @bind-Value=@value MaxLength="5" Change=@(args => OnChange(args, "TextBox with 5 maximum characters")) Style="width: 100%" aria-label="TextBox with 5 maximum characters" />
-        </RadzenCard>
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="4">
-        <RadzenCard>
-            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Change on every input</RadzenText>
-            <RadzenTextBox @oninput=@(args => OnChange(args.Value.ToString(), "TextBox with change on every input")) Style="width: 100%" aria-label="TextBox with change on every input" />
-        </RadzenCard>
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="4">
-        <RadzenCard>
-            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">Disabled TextBox</RadzenText>
-            <RadzenTextBox Disabled="true" Style="width: 100%" aria-label="Disabled TextBox" />
-        </RadzenCard>
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="4">
-        <RadzenCard>
-            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">TextBox with disabled AutoComplete</RadzenText>
-            <RadzenTextBox AutoComplete="false" Style="width: 100%" aria-label="Disabled AutoComplete TextBox" />
-        </RadzenCard>
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="4">
-        <RadzenCard>
-            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">TextBox with custom AutoComplete</RadzenText>
-            <RadzenTextBox autocomplete="custom" Style="width: 100%" aria-label="Custom AutoComplete TextBox" />
-        </RadzenCard>
-    </RadzenColumn>
-    <RadzenColumn Size="12" SizeMD="4">
-        <RadzenCard>
-            <RadzenText TextStyle="TextStyle.Subtitle2" TagName="TagName.H3">TextBox with predefined AutoCompleteType</RadzenText>
-            <RadzenTextBox AutoCompleteType="AutoCompleteType.Sex" Style="width: 100%" aria-label="Custom AutoComplete TextBox" />
-        </RadzenCard>
-    </RadzenColumn>
-</RadzenRow>
+﻿@using Volo.Abp.Identity
+
+<RadzenTemplateForm TItem="IdentityUserCreateDto" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+    <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
+        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                <RadzenLabel Text="用户名 *" Component="UserName" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenTextBox Name="UserName" @bind-Value=@model.UserName Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxUserNameLength" />
+                <RadzenRequiredValidator Component="UserName" Text="UserName is required"  Style="position: absolute" />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                <RadzenLabel Text="密码 *" Component="Password" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenPassword Name="Password" @bind-Value=@model.Password Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxPasswordLength" />
+                <RadzenRequiredValidator Component="Password" Text="Password is required" Style="position: absolute" />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                <RadzenLabel Text="邮箱 *" Component="Email" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenTextBox Name="Email" @bind-Value=@model.Email Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxEmailLength" />
+                <RadzenRequiredValidator Component="Email" Text="Email is required" Style="position: absolute" />
+                <RadzenEmailValidator Component="Email" Text="Provide a valid email address" Style="position: absolute" />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                <RadzenLabel Text="手机号" Component="PhoneNumber" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenTextBox Name="PhoneNumber" @bind-Value=@model.PhoneNumber Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxPhoneNumberLength" />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                <RadzenLabel Text="启用" Component="IsActive" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenCheckBox TValue="bool" @bind-Value=@model.IsActive Name="IsActive"  />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                <RadzenLabel Text="账户锁定" Component="LockoutEnabled" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenCheckBox TValue="bool" @bind-Value=@model.LockoutEnabled Name="LockoutEnabled"  />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center" class="rz-mt-4">
+            <RadzenColumn Size="12" Offset="0" SizeMD="8" OffsetMD="4">
+                <RadzenButton ButtonType="ButtonType.Submit" Text="保存"></RadzenButton>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenStack>
+</RadzenTemplateForm>
 
 @code {
+    [Inject]
+    IIdentityUserAppService UserAppService { get; set; } = default!;
+    [Inject]
+    NavigationManager NavigationManager { get; set; } = default!;
 
+    IdentityUserCreateDto model = new() { IsActive = true, LockoutEnabled = true };
+
+    async Task OnSubmit(IdentityUserCreateDto model)
+    {
+        await UserAppService.CreateAsync(model);
+        NavigationManager.NavigateTo("/user/list");
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+    }
 }

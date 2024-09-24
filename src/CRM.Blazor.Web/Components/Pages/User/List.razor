@@ -1,25 +1,36 @@
 ﻿@page "/User/List"
-@using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.Identity
 @using Volo.Abp.Users
+@inject DialogService DialogService
+
 <PageTitle>用户列表</PageTitle>
 <RadzenDataGrid Data="@users" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" PagingSummaryFormat="@pagingSummaryFormat"
                 Page="@OnPageAsync">
     <HeaderTemplate>
-        <RadzenButton Text="添加用户"  />
+        <RadzenButton Text="添加用户" Click="OpenCreateUserDialog" />
     </HeaderTemplate>
     <Columns>
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Id)" Title="ID" Width="80px" Visible="false" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.UserName)" Title="用户名" Width="160px" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Email)" Title="邮箱" Width="160px" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="手机号" Width="200px" />
+        <RadzenDataGridColumn Title="启用" Width="60px">
+            <Template>
+                <RadzenCheckBox TValue="bool" Value="@(context.IsActive)" ReadOnly="true" />
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Title="账户锁定" Width="60px">
+            <Template>
+                <RadzenCheckBox TValue="bool" Value="@(context.LockoutEnabled)" ReadOnly="true" />
+            </Template>
+        </RadzenDataGridColumn>
     </Columns>
 </RadzenDataGrid>
 
 @code {
     [Inject]
-    public IIdentityUserAppService UserAppService { get; set; } = null!;
+    public IIdentityUserAppService UserAppService { get; set; } = default!;
 
     string pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
 
@@ -43,5 +54,17 @@
     private async Task OnPageAsync(PagerEventArgs args)
     {
         
+    }
+
+    public async Task OpenCreateUserDialog()
+    {
+        await DialogService.OpenAsync<Create>("添加用户",
+               options: new DialogOptions()
+                   {
+                       Resizable = true,
+                       Draggable = true,
+                       Width = "700px",
+                       Height = "700px"
+                   });
     }
 }
