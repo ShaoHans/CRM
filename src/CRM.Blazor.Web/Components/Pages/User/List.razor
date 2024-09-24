@@ -32,7 +32,8 @@
                 <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning" />
                 @if (context.UserName != "admin")
                 {
-                    <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger" />
+                    <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
+                                  Click=@(async () => await ShowDeleteConfirmDialogAsync(context.Id)) />
                 }
             </Template>
         </RadzenDataGridColumn>
@@ -84,7 +85,7 @@
         StateHasChanged();
     }
 
-    public async Task OpenCreateUserDialog()
+    private async Task OpenCreateUserDialog()
     {
         await DialogService.OpenAsync<Create>("添加用户",
                options: new DialogOptions()
@@ -97,4 +98,22 @@
 
         await LoadUsersAsync();
     }
+
+    private async Task ShowDeleteConfirmDialogAsync(Guid userId)
+    {
+        var result = await DialogService.Confirm("用户一旦删除将无法恢复，确认删除吗?", "删除用户", 
+                new ConfirmOptions() 
+                { 
+                    OkButtonText = "确定", 
+                    CancelButtonText = "取消" 
+                });
+        if (result == true)
+        {
+            await UserAppService.DeleteAsync(userId);
+            await LoadUsersAsync();
+        }
+    }
+
 }
+
+    

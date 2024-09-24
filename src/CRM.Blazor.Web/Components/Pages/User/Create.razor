@@ -98,6 +98,7 @@
     async Task OnSubmit(IdentityUserCreateDto model)
     {        
         await UserAppService.CreateAsync(model);
+        NavigationManager.NavigateTo("/user/list");
     }
 
     void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
