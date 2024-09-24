@@ -1,5 +1,6 @@
 ﻿@page "/login"
 @using CRM.Blazor.Web.Components.Layout
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Volo.Abp.Identity.AspNetCore
 @inherits LayoutComponentBase
@@ -52,19 +53,5 @@
             NavigationManager.NavigateTo("/");
             return;
         }
-
-        // var user = await UserManager.FindByNameAsync(args.Username);
-        // if (user != null)
-        // {
-        //     var result = await SignInManager.CheckPasswordSignInAsync(user, args.Password, lockoutOnFailure: true);
-        //     if (result.Succeeded)
-        //     {
-        //         var claimsPrincipal = await SignInManager.CreateUserPrincipalAsync(user);
-
-        //         // 使用 HttpContext 直接设置 Cookie
-        //         await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, claimsPrincipal);
-        //         NavigationManager.NavigateTo("/");  // 成功后跳转到主页
-        //     }
-        // }
     }
 }

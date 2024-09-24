@@ -136,6 +136,7 @@ public class CRMBlazorWebModule : AbpModule
         // Add Radzen.Blazor services
         context.Services.AddRadzenComponents();
         context.Services.AddRadzenQueryStringThemeService();
+        context.Services.AddCascadingAuthenticationState();
 
         //builder.Services.AddScoped<CompilerService>();
         context.Services.AddScoped<MenuService>();
