@@ -28,7 +28,8 @@
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.CreationTime)" Title="添加时间" Width="160px" />
         <RadzenDataGridColumn Title="操作" Width="160px">
             <Template>
-                <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success" />
+                <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
+                            Click="@(async () => await OpenEditUserDialog(context))"/>
                 <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning" />
                 @if (context.UserName != "admin")
                 {
@@ -88,6 +89,21 @@
     private async Task OpenCreateUserDialog()
     {
         await DialogService.OpenAsync<Create>("添加用户",
+               options: new DialogOptions()
+                   {
+                       Resizable = true,
+                       Draggable = true,
+                       Width = "700px",
+                       Height = "700px"
+                   });
+
+        await LoadUsersAsync();
+    }
+
+    private async Task OpenEditUserDialog(IdentityUserDto user)
+    {
+        await DialogService.OpenAsync<Edit>("编辑用户",
+               new Dictionary<string, object>() { { "User", user } },
                options: new DialogOptions()
                    {
                        Resizable = true,
