@@ -6,7 +6,7 @@
 <PageTitle>用户列表</PageTitle>
 <RadzenDataGrid Data="@users" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" PagingSummaryFormat="@pagingSummaryFormat"
-                Page="@OnPageAsync">
+                Page="@OnPageAsync" Count="@totalCount" PageSizeChanged="@OnPageSizeChangedAsync" IsLoading="@isLoading">
     <HeaderTemplate>
         <RadzenButton Text="添加用户" Click="OpenCreateUserDialog" />
     </HeaderTemplate>
@@ -14,7 +14,7 @@
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Id)" Title="ID" Width="80px" Visible="false" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.UserName)" Title="用户名" Width="160px" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Email)" Title="邮箱" Width="160px" />
-        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="手机号" Width="200px" />
+        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="手机号码" Width="200px" />
         <RadzenDataGridColumn Title="启用" Width="60px">
             <Template>
                 <RadzenCheckBox TValue="bool" Value="@(context.IsActive)" ReadOnly="true" />
@@ -34,26 +34,49 @@
 
     string pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
 
-    IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30 };
+    IEnumerable<int> pageSizeOptions = new int[] { 2, 10, 20, 30 };
     IEnumerable<IdentityUserDto> users = new List<IdentityUserDto>();
     bool showPagerSummary = true;
+    int totalCount = 0;
+    bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        var result = await UserAppService.GetListAsync(new GetIdentityUsersInput
-        {
-            SkipCount = 0,
-            MaxResultCount = 20,
-        });
+    }
 
-        users = result.Items;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadUsersAsync();
+        }
     }
 
     private async Task OnPageAsync(PagerEventArgs args)
     {
-        
+        await LoadUsersAsync(args.Skip, args.Top);
+    }
+
+    private async Task OnPageSizeChangedAsync(int pageSize)
+    {
+        await LoadUsersAsync(0, pageSize);
+    }
+
+    private async Task LoadUsersAsync(int skipCount = 0, int maxResultCount = 10)
+    {
+        isLoading = true;
+        var result = await UserAppService.GetListAsync(new GetIdentityUsersInput
+            {
+                SkipCount = skipCount,
+                MaxResultCount = maxResultCount,
+            });
+
+        users = result.Items;
+        totalCount = (int)result.TotalCount;
+        isLoading = false;
+        StateHasChanged();
     }
 
     public async Task OpenCreateUserDialog()
@@ -66,5 +89,7 @@
                        Width = "700px",
                        Height = "700px"
                    });
+
+        await LoadUsersAsync();
     }
 }
