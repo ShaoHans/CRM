@@ -1,8 +1,5 @@
 ﻿@page "/login"
 @using CRM.Blazor.Web.Components.Layout
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Identity
-@using Volo.Abp.Identity.AspNetCore
 @inherits LayoutComponentBase
 @layout LoginLayout
 
@@ -31,27 +28,5 @@
 
 
 @code {
-    [Inject]
-    public SignInManager<Volo.Abp.Identity.IdentityUser> SignInManager { get; set; } = null!;
 
-    [Inject]
-    public NavigationManager NavigationManager { get; set; } = null!;
-
-    [Inject]
-    public UserManager<Volo.Abp.Identity.IdentityUser> UserManager { get; set; } = default!;
-
-    protected override Task OnInitializedAsync()
-    {
-        return base.OnInitializedAsync();
-    }
-
-    public async Task LoginAsync(LoginArgs args)
-    {
-        var result = await SignInManager.PasswordSignInAsync(args.Username, args.Password, true, true);
-        if (result.Succeeded)
-        {
-            NavigationManager.NavigateTo("/");
-            return;
-        }
-    }
 }
