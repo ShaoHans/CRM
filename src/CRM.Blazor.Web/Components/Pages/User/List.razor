@@ -5,7 +5,7 @@
 
 <PageTitle>用户列表</PageTitle>
 <RadzenDataGrid Data="@users" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
-                PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" PagingSummaryFormat="@pagingSummaryFormat"
+                PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" 
                 Page="@OnPageAsync" Count="@totalCount" PageSizeChanged="@OnPageSizeChangedAsync" IsLoading="@isLoading">
     <HeaderTemplate>
         <RadzenButton Text="添加用户" Click="OpenCreateUserDialog" />
@@ -20,7 +20,7 @@
                 <RadzenCheckBox TValue="bool" Value="@(context.IsActive)" ReadOnly="true" />
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn Title="账户锁定" Width="60px">
+        <RadzenDataGridColumn Title="账户锁定" Width="80px">
             <Template>
                 <RadzenCheckBox TValue="bool" Value="@(context.LockoutEnabled)" ReadOnly="true" />
             </Template>
@@ -44,8 +44,6 @@
 @code {
     [Inject]
     public IIdentityUserAppService UserAppService { get; set; } = default!;
-
-    string pagingSummaryFormat = "Displaying page {0} of {1} <b>(total {2} records)</b>";
 
     IEnumerable<int> pageSizeOptions = new int[] { 2, 10, 20, 30 };
     IEnumerable<IdentityUserDto> users = new List<IdentityUserDto>();
