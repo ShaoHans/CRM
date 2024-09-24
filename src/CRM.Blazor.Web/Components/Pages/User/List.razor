@@ -41,12 +41,6 @@
     int totalCount = 0;
     bool isLoading = true;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)

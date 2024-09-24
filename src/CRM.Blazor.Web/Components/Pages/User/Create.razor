@@ -59,9 +59,11 @@
                 <RadzenLabel Text="角色" Component="RoleNames" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenDropDown @bind-Value=@model.RoleNames Data=@roles TextProperty="@nameof(AssignedRoleViewModel.Name)"
+                <RadzenDropDown @bind-Value=@model.RoleNames Data=@roles 
+                                TextProperty="@nameof(AssignedRoleViewModel.Name)"
                                 ValueProperty="@nameof(AssignedRoleViewModel.Name)" Name="RoleNames"
                                 Multiple=true AllowClear=true Placeholder="分配角色" Chips=true Style="width: 100%;" />
+                                <RadzenLabel>@roles.Count</RadzenLabel>
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" class="rz-mt-4">
@@ -84,17 +86,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         var roles = (await UserAppService.GetAssignableRolesAsync())
             .Items?.Select(r => new AssignedRoleViewModel { Name = r.Name, IsAssigned = r.IsDefault })
             .ToList();
+
+        await base.OnInitializedAsync();
     }
 
     async Task OnSubmit(IdentityUserCreateDto model)
     {        
         await UserAppService.CreateAsync(model);
-        NavigationManager.NavigateTo("/user/list");
     }
 
     void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
