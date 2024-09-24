@@ -181,7 +181,7 @@ public class MenuService
                 {
                     Name = "用户列表",
                     Path = "/user/list",
-                    Icon = "&#xe40a",
+                    Icon = "list",
                     Tags = new[] { "form", "edit" }
                 },
             ]
