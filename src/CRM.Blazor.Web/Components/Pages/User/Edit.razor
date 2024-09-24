@@ -4,7 +4,8 @@
     <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
-                <RadzenLabel Text="用户名 *" Component="UserName" />
+                <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
+                <RadzenLabel Text="用户名" Component="UserName" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenTextBox Name="UserName" @bind-Value=@model.UserName Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxUserNameLength" />
@@ -21,7 +22,8 @@
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
-                <RadzenLabel Text="邮箱 *" Component="Email" />
+                <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
+                <RadzenLabel Text="邮箱" Component="Email" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenTextBox Name="Email" @bind-Value=@model.Email Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxEmailLength" />
