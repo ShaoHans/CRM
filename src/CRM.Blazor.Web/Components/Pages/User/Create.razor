@@ -81,15 +81,15 @@
 
     IdentityUserCreateDto model = new() { IsActive = true, LockoutEnabled = true };
 
-    List<AssignedRoleViewModel> roles = new();
+    IEnumerable<AssignedRoleViewModel> roles = [];
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        var roles = (await UserAppService.GetAssignableRolesAsync())
+        roles = (await UserAppService.GetAssignableRolesAsync())
             .Items?.Select(r => new AssignedRoleViewModel { Name = r.Name, IsAssigned = r.IsDefault })
-            .ToList();
+            ?? [];
     }
 
     async Task OnSubmit(IdentityUserCreateDto model)
