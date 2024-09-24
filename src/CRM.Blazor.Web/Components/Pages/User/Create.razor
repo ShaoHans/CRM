@@ -59,9 +59,7 @@
                 <RadzenLabel Text="角色" Component="RoleNames" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenDropDown @bind-Value=@model.RoleNames Data=@roles 
-                                TextProperty="@nameof(AssignedRoleViewModel.Name)"
-                                ValueProperty="@nameof(AssignedRoleViewModel.Name)" Name="RoleNames"
+                <RadzenDropDown TValue="IEnumerable<string>" Data=@roleNames Name="RoleNames" ValueChanged="RolesChange"
                                 Multiple=true AllowClear=true Placeholder="分配角色" Chips=true Style="width: 100%;" />
             </RadzenColumn>
         </RadzenRow>
@@ -79,17 +77,22 @@
     [Inject]
     NavigationManager NavigationManager { get; set; } = default!;
 
-    IdentityUserCreateDto model = new() { IsActive = true, LockoutEnabled = true };
+    IdentityUserCreateDto model = new() { IsActive = true, LockoutEnabled = true, RoleNames = [] };
 
-    IEnumerable<AssignedRoleViewModel> roles = [];
+    IList<string> roleNames = [];
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
 
-        roles = (await UserAppService.GetAssignableRolesAsync())
-            .Items?.Select(r => new AssignedRoleViewModel { Name = r.Name, IsAssigned = r.IsDefault })
+        roleNames = (await UserAppService.GetAssignableRolesAsync())
+            .Items?.Select(r => r.Name).ToArray()
             ?? [];
+    }
+
+    void RolesChange(IEnumerable<string> values)
+    {
+        model.RoleNames = values.ToArray();
     }
 
     async Task OnSubmit(IdentityUserCreateDto model)
