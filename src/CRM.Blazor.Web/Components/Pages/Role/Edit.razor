@@ -1,0 +1,68 @@
+﻿@using Volo.Abp.Identity
+@inject IIdentityRoleAppService RoleAppService
+@inject NavigationManager NavigationManager
+
+<RadzenTemplateForm TItem="IdentityRoleUpdateDto" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+    <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
+        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
+                <RadzenLabel Text="角色名称" Component="Name" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenTextBox Name="Name" @bind-Value=@model.Name Style="display: block; width: 100%;" MaxLength="IdentityRoleConsts.MaxNameLength" />
+                <RadzenRequiredValidator Component="Name" Text="RoleName is required" Style="position: absolute" />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                <RadzenLabel Text="默认" Component="IsDefault" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenCheckBox TValue="bool" @bind-Value=@model.IsDefault Name="IsDefault" />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                <RadzenLabel Text="公开" Component="IsPublic" />
+            </RadzenColumn>
+            <RadzenColumn Size="12" SizeMD="8">
+                <RadzenCheckBox TValue="bool" @bind-Value=@model.IsPublic Name="IsPublic" />
+            </RadzenColumn>
+        </RadzenRow>
+        <RadzenRow AlignItems="AlignItems.Center" class="rz-mt-4">
+            <RadzenColumn Size="12" Offset="0" SizeMD="8" OffsetMD="4">
+                <RadzenButton ButtonType="ButtonType.Submit" Text="保存"></RadzenButton>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenStack>
+</RadzenTemplateForm>
+
+@code {
+    [Parameter]
+    public IdentityRoleDto Role { get; set; } = new();
+
+    IdentityRoleUpdateDto model = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        model = new IdentityRoleUpdateDto
+            {
+                Name = Role.Name,
+                IsDefault = Role.IsDefault,
+                IsPublic = Role.IsPublic
+            };
+    }
+
+    async Task OnSubmit(IdentityRoleUpdateDto model)
+    {        
+        await RoleAppService.UpdateAsync(Role.Id, model);
+        NavigationManager.NavigateTo("/role/list");
+    }
+
+    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
+    {
+    }
+}

@@ -1,0 +1,118 @@
+﻿@page "/Role/List"
+@using Volo.Abp.Identity
+@inject DialogService DialogService
+@inject IIdentityRoleAppService RoleAppService
+
+<PageTitle>角色列表</PageTitle>
+<RadzenDataGrid Data="@roles" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
+                PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary"
+                Page="@OnPageAsync" Count="@totalCount" PageSizeChanged="@OnPageSizeChangedAsync" IsLoading="@isLoading">
+    <HeaderTemplate>
+        <RadzenButton Text="添加角色" Click="OpenCreateRoleDialog" />
+    </HeaderTemplate>
+    <Columns>
+        <RadzenDataGridColumn Title="角色名称">
+            <Template>
+                <RadzenLabel Text="@context.Name" />
+                <RadzenBadge Text="默认" Visible="context.IsDefault" BadgeStyle="BadgeStyle.Success" />
+                <RadzenBadge Text="公开" Visible="context.IsPublic" BadgeStyle="BadgeStyle.Info" />
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Title="操作" Width="160px">
+            <Template>
+                <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
+                              Click="@(async () => await OpenEditRoleDialog(context))" />
+                <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning" />
+                @if (context.Name != "admin")
+                {
+                    <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
+                                  Click=@(async () => await ShowDeleteConfirmDialogAsync(context.Id)) />
+                }
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+@code {
+    IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30 };
+    IEnumerable<IdentityRoleDto> roles = [];
+    bool showPagerSummary = true;
+    int totalCount = 0;
+    bool isLoading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await LoadRolesAsync();
+        }
+    }
+
+    private async Task OnPageAsync(PagerEventArgs args)
+    {
+        await LoadRolesAsync(args.Skip, args.Top);
+    }
+
+    private async Task OnPageSizeChangedAsync(int pageSize)
+    {
+        await LoadRolesAsync(0, pageSize);
+    }
+
+    private async Task LoadRolesAsync(int skipCount = 0, int maxResultCount = 10)
+    {
+        isLoading = true;
+        var result = await RoleAppService.GetListAsync(new GetIdentityRolesInput
+            {
+                SkipCount = skipCount,
+                MaxResultCount = maxResultCount,
+            });
+
+        roles = result.Items;
+        totalCount = (int)result.TotalCount;
+        isLoading = false;
+        StateHasChanged();
+    }
+
+    private async Task OpenCreateRoleDialog()
+    {
+        await DialogService.OpenAsync<Create>("添加角色",
+               options: new DialogOptions()
+                   {
+                       Draggable = true,
+                       Width = "600px",
+                       Height = "450px"
+                   });
+
+        await LoadRolesAsync();
+    }
+
+    private async Task OpenEditRoleDialog(IdentityRoleDto role)
+    {
+        await DialogService.OpenAsync<Edit>("编辑角色",
+               new Dictionary<string, object>() { { "Role", role } },
+               options: new DialogOptions()
+                   {
+                       Draggable = true,
+                       Width = "600px",
+                       Height = "450px"
+                   });
+
+        await LoadRolesAsync();
+    }
+
+    private async Task ShowDeleteConfirmDialogAsync(Guid roleId)
+    {
+        var result = await DialogService.Confirm("角色一旦删除将无法恢复，确认删除吗?", "删除角色",
+                new ConfirmOptions()
+                    {
+                        OkButtonText = "确定",
+                        CancelButtonText = "取消"
+                    });
+        if (result == true)
+        {
+            await RoleAppService.DeleteAsync(roleId);
+            await LoadRolesAsync();
+        }
+    }
+
+}

@@ -173,16 +173,21 @@ public class MenuService
         },
         new Menu
         {
-            Name = "用户管理",
+            Name = "身份认证管理",
             Icon = "&#xe92c",
             Children =
             [
                 new Menu
                 {
-                    Name = "用户列表",
+                    Name = "用户",
                     Path = "/user/list",
-                    Icon = "list",
-                    Tags = new[] { "form", "edit" }
+                    Icon = "list"
+                },
+                 new Menu
+                {
+                    Name = "角色",
+                    Path = "/role/list",
+                    Icon = "safety_check"
                 },
             ]
         }
