@@ -21,7 +21,8 @@ public class AccountController : AbpControllerBase
         {
             return Redirect("~/");
         }
-        return Redirect("~/Login?error=Invalid user or password");
+        
+        return Redirect($"~/Login?error=Invalid user or password:{result.GetResultAsString()}");
     }
 
     [HttpPost("/account/logout")]
