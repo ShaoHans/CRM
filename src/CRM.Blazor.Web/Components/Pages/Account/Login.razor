@@ -2,6 +2,7 @@
 @using CRM.Blazor.Web.Components.Layout
 @inherits LayoutComponentBase
 @layout LoginLayout
+@inject NotificationService NotificationService
 
 <PageTitle>Login</PageTitle>
 
@@ -28,5 +29,23 @@
 
 
 @code {
+    [SupplyParameterFromQuery]
+    [Parameter]
+    public string? Error { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        if (!string.IsNullOrWhiteSpace(Error))
+        {
+            NotificationService.Notify(new NotificationMessage
+            {
+                Severity = NotificationSeverity.Error,
+                Summary = "登录失败",
+                Detail = Error,
+                Duration = 3000
+            });
+        }
+    }
 }
