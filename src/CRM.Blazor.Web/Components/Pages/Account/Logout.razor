@@ -1,0 +1,19 @@
+﻿@page "/logout"
+@using CRM.Blazor.Web.Components.Layout
+@inherits LayoutComponentBase
+@layout LoginLayout
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+
+<RadzenText TextStyle="TextStyle.DisplayH1" TagName="TagName.H1" class="rz-my-12">
+    正在退出系统...
+</RadzenText>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Http.PostAsync($"{Configuration.GetValue<string>("App:SelfUrl")}/account/logout", null);
+        NavigationManager.NavigateTo("/login");
+    }
+}

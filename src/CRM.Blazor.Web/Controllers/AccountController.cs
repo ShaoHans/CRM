@@ -23,4 +23,11 @@ public class AccountController : AbpControllerBase
         }
         return Redirect("~/Login?error=Invalid user or password");
     }
+
+    [HttpPost("/account/logout")]
+    public async Task<IActionResult> LogoutAsync()
+    {
+        await _signInManager.SignOutAsync();
+        return Ok();
+    }
 }
