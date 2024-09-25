@@ -1,4 +1,5 @@
 ﻿@using Volo.Abp.Identity
+@inject NotificationService NotificationService
 
 <RadzenTemplateForm TItem="IdentityUserCreateDto" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
     <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
@@ -99,9 +100,16 @@
     }
 
     async Task OnSubmit(IdentityUserCreateDto model)
-    {        
-        await UserAppService.CreateAsync(model);
-        NavigationManager.NavigateTo("/user/list");
+    {
+        try
+        {
+            await UserAppService.CreateAsync(model);
+            NavigationManager.NavigateTo("/user/list");
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Notify(detail: ex.Message);
+        }
     }
 
     void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
