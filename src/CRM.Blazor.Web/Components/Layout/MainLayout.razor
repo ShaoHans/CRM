@@ -35,11 +35,6 @@
                                 <RadzenGravatar Email="user@example.com" Style="width:24px;height:24px;"></RadzenGravatar>
                             </Template>
                             <ChildContent>
-                                @* <RadzenProfileMenuItem Text="Buttons" Path="buttons" Icon="account_circle"></RadzenProfileMenuItem>
-                                <RadzenProfileMenuItem Text="Menu" Path="menu" Icon="line_weight"></RadzenProfileMenuItem>
-                                <RadzenProfileMenuItem Text="FileInput" Path="fileinput" Icon="attach_file"></RadzenProfileMenuItem>
-                                <RadzenProfileMenuItem Text="Dialog" Path="dialog" Icon="perm_media"></RadzenProfileMenuItem>
-                                <RadzenProfileMenuItem Text="Notification" Path="notification" Icon="announcement"></RadzenProfileMenuItem> *@
                                 <RadzenProfileMenuItem Text="退出" Icon="logout" Path="logout" ></RadzenProfileMenuItem>
                             </ChildContent>
                         </RadzenProfileMenu>
@@ -56,15 +51,9 @@
                 <RadzenColumn Size="12">
                     <RadzenRow class="rz-mx-auto" Style="max-width: 1600px;">
                         <RadzenColumn Size="12">
-                            @Body
-                            @* <RadzenText TextStyle="TextStyle.Body1" TextAlign="TextAlign.Center" class="rz-mt-12">
-                                <span>Radzen Blazor Components, &copy; 2018-2024 Radzen.</span> <br />
-                                <RadzenLink Path="https://github.com/radzenhq/radzen-blazor" target="_blank">Source Code</RadzenLink> licensed under
-                                <RadzenLink Path="https://github.com/radzenhq/radzen-blazor/blob/master/LICENSE" target="_blank">MIT</RadzenLink>
-                            </RadzenText> *@
-                            @* <RadzenText TextStyle="TextStyle.Body1" TextAlign="TextAlign.Center">
-                                <Social />
-                            </RadzenText> *@
+                            <CustomErrorBoundary>
+                                @Body
+                            </CustomErrorBoundary>
                         </RadzenColumn>
                     </RadzenRow>
                 </RadzenColumn>
@@ -72,11 +61,6 @@
         </RadzenContentContainer>
     </ChildContent>
 </RadzenBody>
-@* <RadzenFooter>
-        <RadzenText TextAlign="TextAlign.Center">
-            <span>Smart CRM &copy; 2018-2024 SHZ.</span>
-    </RadzenText>
-</RadzenFooter> *@
 <RadzenSidebar @ref="sidebar0" @bind-Expanded="@sidebarExpanded" class="demos-sidebar" style="display: flex; flex-direction: column">
     <div style="padding: 1rem">
         <RadzenTextBox id="find" Placeholder="Find menu ..." type="search" @oninput="@FilterPanelMenu" style="width: 100%" class="rz-search-input" aria-label="find" />

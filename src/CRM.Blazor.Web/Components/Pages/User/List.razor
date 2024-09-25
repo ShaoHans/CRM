@@ -2,6 +2,7 @@
 @using Volo.Abp.Identity
 @using Volo.Abp.Users
 @inject DialogService DialogService
+@inject NotificationService NotificationService
 
 <PageTitle>用户列表</PageTitle>
 <RadzenDataGrid Data="@users" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
@@ -123,9 +124,9 @@
         {
             await UserAppService.DeleteAsync(userId);
             await LoadUsersAsync();
+            NotificationService.Success("删除成功");
         }
     }
-
 }
 
     

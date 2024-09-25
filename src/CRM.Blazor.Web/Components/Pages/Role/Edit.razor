@@ -1,6 +1,7 @@
 ﻿@using Volo.Abp.Identity
 @inject IIdentityRoleAppService RoleAppService
 @inject NavigationManager NavigationManager
+@inject NotificationService NotificationService
 
 <RadzenTemplateForm TItem="IdentityRoleUpdateDto" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
     <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
@@ -58,8 +59,17 @@
 
     async Task OnSubmit(IdentityRoleUpdateDto model)
     {        
-        await RoleAppService.UpdateAsync(Role.Id, model);
-        NavigationManager.NavigateTo("/role/list");
+
+        try
+        {
+            await RoleAppService.UpdateAsync(Role.Id, model);
+            NavigationManager.NavigateTo("/role/list");
+            NotificationService.Success("保存成功");
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Error(ex.Message);
+        }
     }
 
     void OnInvalidSubmit(FormInvalidSubmitEventArgs args)

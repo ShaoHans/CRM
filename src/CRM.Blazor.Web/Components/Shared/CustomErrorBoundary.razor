@@ -1,0 +1,21 @@
+﻿@inherits ErrorBoundary
+@inject ILogger<CustomErrorBoundary> Logger
+@inject NotificationService NotificationService
+
+@if (CurrentException is null)
+{
+    @ChildContent
+}
+else if (ErrorContent is not null)
+{
+    @ErrorContent(CurrentException)
+}
+
+@code {
+    protected override Task OnErrorAsync(Exception ex)
+    {
+        Logger.LogError(ex, "😈 A rotten gremlin got us. Sorry!");
+        NotificationService.Error(ex.Message);
+        return Task.CompletedTask;
+    }
+}

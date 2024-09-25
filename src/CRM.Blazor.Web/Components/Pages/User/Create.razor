@@ -105,10 +105,11 @@
         {
             await UserAppService.CreateAsync(model);
             NavigationManager.NavigateTo("/user/list");
+            NotificationService.Success("保存成功");
         }
         catch (Exception ex)
         {
-            NotificationService.Notify(detail: ex.Message);
+            NotificationService.Error(ex.Message);
         }
     }
 
