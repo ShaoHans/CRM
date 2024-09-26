@@ -1,6 +1,8 @@
-﻿@inherits ErrorBoundary
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits ErrorBoundary
 @inject ILogger<CustomErrorBoundary> Logger
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
 
 @if (CurrentException is null)
 {
@@ -12,10 +14,26 @@ else if (ErrorContent is not null)
 }
 
 @code {
-    protected override Task OnErrorAsync(Exception ex)
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
+    protected override async Task OnErrorAsync(Exception ex)
     {
-        Logger.LogError(ex, "😈 A rotten gremlin got us. Sorry!");
-        NotificationService.Error(ex.Message);
-        return Task.CompletedTask;
+        Logger.LogError(ex, "Server internal error");
+
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+            
+            if (user?.Identity is not null && !user.Identity.IsAuthenticated)
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+        }
+        else
+        {
+            NotificationService.Error("服务器繁忙！");
+        }
     }
 }
