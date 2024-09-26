@@ -259,6 +259,7 @@ public class CRMBlazorWebModule : AbpModule
         app.UseCorrelationId();
         app.UseRouting();
         app.UseStaticFiles();
+        app.UseStatusCodePagesWithRedirects("/404");
         app.UseAntiforgery();
         ((WebApplication)app).MapRazorComponents<App>().AddInteractiveServerRenderMode();
         app.UseAbpSecurityHeaders();
