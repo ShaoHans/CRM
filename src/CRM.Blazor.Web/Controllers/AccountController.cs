@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc;
 
@@ -25,10 +27,11 @@ public class AccountController : AbpControllerBase
         return Redirect($"~/Login?error=Invalid user or password:{result.GetResultAsString()}");
     }
 
-    [HttpPost("/account/logout")]
+    [HttpGet("/account/logout")]
     public async Task<IActionResult> LogoutAsync()
     {
         await _signInManager.SignOutAsync();
-        return Ok();
+        await HttpContext.SignOutAsync();
+        return Redirect("~/Login");
     }
 }

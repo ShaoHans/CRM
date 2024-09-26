@@ -1,8 +1,10 @@
 ﻿@page "/login"
 @using CRM.Blazor.Web.Components.Layout
+@using Microsoft.AspNetCore.Components.Authorization
 @inherits LayoutComponentBase
 @layout LoginLayout
 @inject NotificationService NotificationService
+@inject NavigationManager NavigationManager
 
 <PageTitle>Login</PageTitle>
 
@@ -33,6 +35,9 @@
     [Parameter]
     public string? Error { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? authenticationState { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
@@ -46,6 +51,17 @@
                 Detail = Error,
                 Duration = 3000
             });
+        }
+
+        if (authenticationState is not null)
+        {
+            var authState = await authenticationState;
+            var user = authState?.User;
+
+            if (user?.Identity is not null && user.Identity.IsAuthenticated)
+            {
+                NavigationManager.NavigateTo("/");
+            }
         }
     }
 }
