@@ -23,7 +23,8 @@
             <Template>
                 <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
                               Click="@(async () => await OpenEditRoleDialog(context))" />
-                <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning" />
+                <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning"
+                              Click="@(async () => await OpenAssignPermissionDialog(context))" />
                 @if (context.Name != "admin")
                 {
                     <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
@@ -99,6 +100,17 @@
                    });
 
         await LoadRolesAsync();
+    }
+
+    private async Task OpenAssignPermissionDialog(IdentityRoleDto role)
+    {
+        await DialogService.OpenAsync<Permission>("分配权限",
+               options: new DialogOptions()
+                   {
+                       Draggable = true,
+                       Width = "800px",
+                       Height = "700px"
+                   });
     }
 
     private async Task ShowDeleteConfirmDialogAsync(Guid roleId)

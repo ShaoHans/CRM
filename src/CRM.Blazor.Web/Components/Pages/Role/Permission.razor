@@ -1,0 +1,46 @@
+﻿@using Volo.Abp.PermissionManagement
+@inject IPermissionAppService PermissionAppService
+
+<RadzenSplitter Orientation="Orientation.Vertical" 
+    style="height: 100%; border: 1px solid rgba(0,0,0,.08);">
+    <RadzenSplitterPane Size="100%">
+        <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
+            <RadzenCheckBox Name="CheckBox1" TValue="bool" />
+            <RadzenLabel Text="授予所有权限" Component="CheckBox1" />
+        </RadzenStack>
+        <RadzenSplitter Collapse="OnCollapse">
+            <RadzenSplitterPane Size="40%" Min="40%" Max="40%">
+                @* <RadzenPanelMenu DisplayStyle="MenuItemDisplayStyle.Text">
+                    @foreach (var item in groups)
+                    {
+                        <RadzenPanelMenuItem Text="@item.DisplayName" />
+                    }
+                </RadzenPanelMenu> *@
+                <RadzenListBox 
+                               Data=@groups TextProperty="@nameof(PermissionGroupDto.DisplayName)" ValueProperty="@nameof(PermissionGroupDto.DisplayName)" 
+                               AllowClear="true" TValue="string" 
+                               InputAttributes="@(new Dictionary<string,object>(){ { "aria-label", "select company" }})" Style="width: 100%; height: 100%" />
+            </RadzenSplitterPane>
+            <RadzenSplitterPane>
+            </RadzenSplitterPane>
+        </RadzenSplitter>
+    </RadzenSplitterPane>
+</RadzenSplitter>
+
+
+@code {
+    List<PermissionGroupDto> groups = [];
+
+    void OnCollapse(RadzenSplitterEventArgs args)
+    {
+        args.Cancel = true;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        var result = await PermissionAppService.GetAsync("R", "admin");
+        groups = result.Groups;
+    }
+}
