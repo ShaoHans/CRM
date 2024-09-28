@@ -1,4 +1,4 @@
-namespace CRM.Blazor.Web;
+namespace CRM.Blazor.Web.Models;
 
 public class Menu
 {

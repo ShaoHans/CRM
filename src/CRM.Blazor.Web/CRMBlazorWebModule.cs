@@ -138,11 +138,7 @@ public class CRMBlazorWebModule : AbpModule
         context.Services.AddRadzenQueryStringThemeService();
         context.Services.AddCascadingAuthenticationState();
 
-        //builder.Services.AddScoped<CompilerService>();
         context.Services.AddScoped<MenuService>();
-        context.Services.AddScoped<NorthwindService>();
-        context.Services.AddScoped<NorthwindODataService>();
-        context.Services.AddSingleton<GitHubService>();
     }
 
     private void ConfigureAuthentication(

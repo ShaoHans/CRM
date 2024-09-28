@@ -1,3 +1,5 @@
+using CRM.Blazor.Web.Models;
+
 namespace CRM.Blazor.Web.Services;
 
 public class MenuService
