@@ -33,6 +33,7 @@
     bool _selectAllDisabled;
     Dictionary<string, int> _permissionDepths = new Dictionary<string, int>();
     protected string _selectedTabName;
+    List<PermissionTreeItemVm> _permissionTrees = [];
 
     protected bool GrantAll
     {
@@ -126,7 +127,7 @@
         return permissions.All(x => x.IsGranted) && grantedProviders.Any(p => p.ProviderName != _providerName);
     }
 
-    void SetPermissionDepths(List<PermissionGrantInfoDto> permissions, string currentParent, int currentDepth)
+    void SetPermissionDepths(List<PermissionGrantInfoDto> permissions, string? currentParent, int currentDepth)
     {
         foreach (var item in permissions)
         {
@@ -135,6 +136,16 @@
                 _permissionDepths[item.Name] = currentDepth;
                 SetPermissionDepths(permissions, item.Name, currentDepth + 1);
             }
+        }
+    }
+
+    void GenerateTree(List<PermissionGrantInfoDto> allPermissions, string? parentName, int depth)
+    {
+        var subPermissions = allPermissions.Where(p => p.ParentName == parentName);
+
+        foreach (var item in subPermissions)
+        {
+            //_permissionTrees.Add(new PermissionTreeItemVm(depth, item, allPermissions.Where(p => p.ParentName == item.Name).ToList()));
         }
     }
 
