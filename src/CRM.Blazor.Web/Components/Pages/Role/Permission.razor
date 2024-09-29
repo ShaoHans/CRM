@@ -196,6 +196,7 @@
 
     void ValueChanged(object value)
     {
-        
+        var permission = ((PermissionTreeItemVm)value).Permission;
+        _groups.SelectMany(x => x.Permissions).First(x => x.Name == permission.Name).IsGranted = _checkedValues.Contains(value);
     }
 }
