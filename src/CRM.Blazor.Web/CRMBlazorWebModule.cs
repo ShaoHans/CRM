@@ -4,12 +4,15 @@ using CRM.EntityFrameworkCore;
 using CRM.Localization;
 using CRM.MultiTenancy;
 using Microsoft.AspNetCore.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
 using Radzen;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Authentication.JwtBearer;
+using Volo.Abp.AspNetCore.Components.Server.Configuration;
+using Volo.Abp.AspNetCore.Components.Web.Configuration;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.AntiForgery;
@@ -104,7 +107,7 @@ public class CRMBlazorWebModule : AbpModule
     {
         var hostingEnvironment = context.Services.GetHostingEnvironment();
         var configuration = context.Services.GetConfiguration();
-        
+
         if (!configuration.GetValue<bool>("App:DisablePII"))
         {
             Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
@@ -139,6 +142,12 @@ public class CRMBlazorWebModule : AbpModule
         context.Services.AddCascadingAuthenticationState();
 
         context.Services.AddScoped<MenuService>();
+        context.Services.Replace(
+            ServiceDescriptor.Singleton<
+                ICurrentApplicationConfigurationCacheResetService,
+                BlazorServerCurrentApplicationConfigurationCacheResetService
+            >()
+        );
     }
 
     private void ConfigureAuthentication(

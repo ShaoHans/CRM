@@ -1,5 +1,9 @@
-﻿@using Volo.Abp.PermissionManagement
+﻿@using Volo.Abp.AspNetCore.Components.Web.Configuration
+@using Volo.Abp.PermissionManagement
 @inject IPermissionAppService PermissionAppService
+@inject ICurrentApplicationConfigurationCacheResetService CacheResetService
+@inject NotificationService NotificationService
+@inject DialogService DialogService
 
 <RadzenTabs TabPosition="TabPosition.Left" RenderMode="TabRenderMode.Client">
     <Tabs>
@@ -7,9 +11,12 @@
         {
             <RadzenTabsItem Text="@item.DisplayName">
                 <RadzenTree AllowCheckBoxes="true" Style="width: 100%; height: 100%"
+                            CheckedValues="@_checkedValues"
+                            CheckedValuesChanged="(args) => PermissionCheckChanged(args)"
+                            ValueChanged="ValueChanged"
                             Data=@(_permissionTrees.Where(x=>x.GroupName==item.Name))>
                     <RadzenTreeLevel TextProperty="@nameof(PermissionTreeItemVm.DisplayName)"
-                                     ChildrenProperty="Children" 
+                        ChildrenProperty="Children" 
                         Expanded="(i=>true)"
                         HasChildren="(i=>((PermissionTreeItemVm)i).Children.Count>0)" />
                 </RadzenTree>
@@ -18,12 +25,15 @@
     </Tabs>
 </RadzenTabs>
 
-@code {
-    string entityDisplayName;
-    string _providerName = "R";
-    string _providerKey = "admin";
+<RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" Gap="0.5rem" class="rz-pt-4 rz-pb-8">
+    <RadzenButton Icon="save" Click="SaveAsync">保存</RadzenButton>
+</RadzenStack>
 
-    string _entityDisplayName;
+@code {
+    [Parameter]
+    public string ProviderName { get; set; } = default!;
+    [Parameter]
+    public string ProviderKey { get; set; } = default!;
 
     List<PermissionGroupDto> _groups = [];
     List<PermissionGrantInfoDto> _disabledPermissions = [];
@@ -32,8 +42,8 @@
     int _notGrantedPermissionCount = 0;
     bool _selectAllDisabled;
     Dictionary<string, int> _permissionDepths = new Dictionary<string, int>();
-    protected string _selectedTabName;
     List<PermissionTreeItemVm> _permissionTrees = [];
+    IEnumerable<object> _checkedValues = [];
 
     protected bool GrantAll
     {
@@ -79,9 +89,8 @@
     {
         await base.OnInitializedAsync();
 
-        var result = await PermissionAppService.GetAsync(_providerName, _providerKey);
+        var result = await PermissionAppService.GetAsync(ProviderName, ProviderKey);
 
-        _entityDisplayName = entityDisplayName ?? result.EntityDisplayName;
         _groups = result.Groups;
 
         _selectAllDisabled = _groups.All(IsPermissionGroupDisabled);
@@ -90,7 +99,7 @@
         _notGrantedPermissionCount = 0;
         foreach (var permission in _groups.SelectMany(x => x.Permissions))
         {
-            if (permission.IsGranted && permission.GrantedProviders.All(x => x.ProviderName != _providerName))
+            if (permission.IsGranted && permission.GrantedProviders.All(x => x.ProviderName != ProviderName))
             {
                 _disabledPermissions.Add(permission);
                 continue;
@@ -106,18 +115,10 @@
             }
         }
 
-        _selectedTabName = GetNormalizedGroupName(_groups.First().Name);
-
         foreach (var group in _groups)
         {
-            //SetPermissionDepths(group.Permissions, null, 0);
             _permissionTrees.AddRange(GenerateTree(group.Permissions, group.Name, null, 0));
         }
-    }
-
-    string GetNormalizedGroupName(string name)
-    {
-        return "PermissionGroup_" + name.Replace(".", "_");
     }
 
     bool IsPermissionGroupDisabled(PermissionGroupDto group)
@@ -125,19 +126,7 @@
         var permissions = group.Permissions;
         var grantedProviders = permissions.SelectMany(x => x.GrantedProviders);
 
-        return permissions.All(x => x.IsGranted) && grantedProviders.Any(p => p.ProviderName != _providerName);
-    }
-
-    void SetPermissionDepths(List<PermissionGrantInfoDto> permissions, string? currentParent, int currentDepth)
-    {
-        foreach (var item in permissions)
-        {
-            if (item.ParentName == currentParent)
-            {
-                _permissionDepths[item.Name] = currentDepth;
-                SetPermissionDepths(permissions, item.Name, currentDepth + 1);
-            }
-        }
+        return permissions.All(x => x.IsGranted) && grantedProviders.Any(p => p.ProviderName != ProviderName);
     }
 
     List<PermissionTreeItemVm> GenerateTree(List<PermissionGrantInfoDto> allPermissions, string groupName, string? parentName, int depth)
@@ -147,14 +136,66 @@
 
         foreach (var item in subPermissions)
         {
-            treeItems.Add(new PermissionTreeItemVm(depth, groupName, item, GenerateTree(allPermissions, groupName, item.Name, depth + 1)));
+            var treeItem = new PermissionTreeItemVm(depth, groupName, item, GenerateTree(allPermissions, groupName, item.Name, depth + 1));
+            treeItems.Add(treeItem);
+            if(treeItem.Permission.IsGranted)
+            {
+                _checkedValues = _checkedValues.Append(treeItem);
+            }
         }
         return treeItems;
     }
 
-
     bool IsDisabledPermission(PermissionGrantInfoDto permissionGrantInfo)
     {
         return _disabledPermissions.Any(x => x == permissionGrantInfo);
+    }
+
+    async Task SaveAsync()
+    {
+        try
+        {
+            var updateDto = new UpdatePermissionsDto
+                {
+                    Permissions = _groups
+                        .SelectMany(g => g.Permissions)
+                        .Select(p => new UpdatePermissionDto { IsGranted = p.IsGranted, Name = p.Name })
+                        .ToArray()
+                };
+
+            if (!updateDto.Permissions.Any(x => x.IsGranted))
+            {
+                var result = await DialogService.Confirm("您确定要在没有任何权限的情况下保存吗？", "保存权限", 
+                    new ConfirmOptions()
+                        {
+                            OkButtonText = "确定",
+                            CancelButtonText = "取消"
+                        });
+
+                if (result == false)
+                {
+                    return;
+                }
+            }
+
+            await PermissionAppService.UpdateAsync(ProviderName, ProviderKey, updateDto);
+            await CacheResetService.ResetAsync();
+
+            NotificationService.Success("保存成功");
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Error(ex.Message);
+        }
+    }
+
+    void PermissionCheckChanged(IEnumerable<object> chechedValues)
+    {
+
+    }
+
+    void ValueChanged(object value)
+    {
+        
     }
 }
