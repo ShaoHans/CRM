@@ -17,10 +17,14 @@
                                      Expanded="(i=>true)"
                                      HasChildren="(i=>((PermissionTreeItemVm)i).Children.Count>0)">
                         <Template>
-                            <RadzenCheckBox TValue="bool"
-                                onclick="@(()=>PermissionCheckChanged(context.Value))"
-                                @bind-Value="((PermissionTreeItemVm)context.Value).IsGranted" />
-                            <b>@context.Text</b>
+                            @{
+                                var treeItem = (PermissionTreeItemVm)context.Value;
+                                <RadzenCheckBox TValue="bool"
+                                                Name="@treeItem.Name"
+                                                onclick="@(()=>PermissionCheckChanged(context.Value))"
+                                                @bind-Value="treeItem.IsGranted" />
+                                <RadzenLabel Text="@context.Text" Component="@treeItem.Name" class="rz-ms-2" />
+                            }
                         </Template>
                     </RadzenTreeLevel>
                 </RadzenTree>
