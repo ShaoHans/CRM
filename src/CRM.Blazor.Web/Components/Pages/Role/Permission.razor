@@ -79,7 +79,7 @@
                 {
                     Name = group.Name,
                     DisplayName = group.DisplayName,
-                    TreeItems = GenerateTree(group.Permissions, group.Name, null, 0, null)
+                    TreeItems = GenerateTree(group.Permissions, null, 0, null)
                 });
         }
 
@@ -114,16 +114,16 @@
         return permissions.All(x => x.IsGranted) && grantedProviders.Any(p => p.ProviderName != ProviderName);
     }
 
-    List<PermissionTreeItemVm> GenerateTree(List<PermissionGrantInfoDto> allPermissions, string groupName, string? parentName, int depth, PermissionTreeItemVm? parent)
+    List<PermissionTreeItemVm> GenerateTree(List<PermissionGrantInfoDto> allPermissions, string? parentName, int depth, PermissionTreeItemVm? parent)
     {
         var treeItems = new List<PermissionTreeItemVm>();
         var subPermissions = allPermissions.Where(p => p.ParentName == parentName);
 
         foreach (var item in subPermissions)
         {
-            var treeItem = new PermissionTreeItemVm(groupName, depth, item);
+            var treeItem = new PermissionTreeItemVm(depth, item);
             treeItem.SetParent(parent);
-            treeItem.Children = GenerateTree(allPermissions, groupName, item.Name, depth + 1, treeItem);
+            treeItem.Children = GenerateTree(allPermissions, item.Name, depth + 1, treeItem);
             treeItems.Add(treeItem);
         }
         return treeItems;
