@@ -4,29 +4,34 @@ namespace CRM.Blazor.Web.Models;
 
 public class PermissionTreeItemVm
 {
-    public int Depth { get; set; }
-
     public string GroupName { get; set; } = default!;
 
-    public PermissionGrantInfoDto Permission { get; set; } = default!;
+    public int Depth { get; set; }
+
+    public string Name { get; set; } = default!;
+
+    public string DisplayName { get; set; } = default!;
+
+    public string? ParentName { get; set; } = null;
+
+    public bool IsGranted { get; set; }
+
+    public PermissionTreeItemVm? Parent { get; set; }
 
     public List<PermissionTreeItemVm> Children { get; set; } = [];
 
-    public string DisplayName
+    public PermissionTreeItemVm(string groupName, int depth, PermissionGrantInfoDto permission)
     {
-        get { return Permission.DisplayName; }
+        GroupName = groupName;
+        Depth = depth;
+        Name = permission.Name;
+        DisplayName = permission.DisplayName;
+        ParentName = permission.ParentName;
+        IsGranted = permission.IsGranted;
     }
 
-    public PermissionTreeItemVm(
-        int depth,
-        string groupName,
-        PermissionGrantInfoDto permission,
-        List<PermissionTreeItemVm> children
-    )
+    public void SetParent(PermissionTreeItemVm? parent)
     {
-        Depth = depth;
-        GroupName = groupName;
-        Permission = permission;
-        Children = children;
+        Parent = parent;
     }
 }
