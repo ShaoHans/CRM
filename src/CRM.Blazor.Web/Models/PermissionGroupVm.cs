@@ -1,12 +1,60 @@
-﻿using Volo.Abp.PermissionManagement;
+﻿using System.Collections.Generic;
 
 namespace CRM.Blazor.Web.Models;
 
-public class PermissionGroupVm : PermissionGroupDto
+public class PermissionGroupVm
 {
+    public string Name { get; set; } = default!;
+
+    public string DisplayName { get; set; } = default!;
+
     public bool GrantAll
     {
-        get { return Permissions.All(x => x.IsGranted); }
-        set { }
+        get { return Expand().All(x => x.IsGranted); }
+        set { Grant(value); }
+    }
+
+    public List<PermissionTreeItemVm> TreeItems { get; set; } = [];
+
+    public List<PermissionTreeItemVm> Expand()
+    {
+        var result = new List<PermissionTreeItemVm>();
+
+        foreach (var item in TreeItems)
+        {
+            result.Add(item);
+            result.AddRange(GetAllChildren(item.Children));
+        }
+
+        return result;
+
+        List<PermissionTreeItemVm> GetAllChildren(List<PermissionTreeItemVm> children)
+        {
+            var result = new List<PermissionTreeItemVm>();
+            foreach (var child in children)
+            {
+                result.Add(child);
+                result.AddRange(GetAllChildren(child.Children));
+            }
+            return result;
+        }
+    }
+
+    public void Grant(bool isGranted)
+    {
+        foreach (var item in TreeItems)
+        {
+            item.IsGranted = isGranted;
+            GrantAllChildren(item.Children, isGranted);
+        }
+
+        void GrantAllChildren(List<PermissionTreeItemVm> children, bool isGranted)
+        {
+            foreach (var child in children)
+            {
+                child.IsGranted = isGranted;
+                GrantAllChildren(child.Children, isGranted);
+            }
+        }
     }
 }
