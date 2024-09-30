@@ -5,11 +5,26 @@
 @inject NotificationService NotificationService
 @inject DialogService DialogService
 
+
+<RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start">
+    <RadzenCheckBox TValue="bool" Name="GrantAll" />
+    <RadzenLabel Text="授予所有权限" Component="GrantAll" />
+</RadzenStack>
+<RadzenStack Orientation="Orientation.Vertical" Gap="0" class="rz-pt-1"
+             Style="border-top: var(--rz-grid-cell-border); min-height: 2rem; max-height: 12rem; overflow: auto;" />
+
 <RadzenTabs TabPosition="TabPosition.Left" RenderMode="TabRenderMode.Client">
     <Tabs>
         @foreach (var item in _groups)
         {
             <RadzenTabsItem Text="@item.DisplayName">
+                <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start">
+                    <RadzenCheckBox TValue="bool" Name="@item.DisplayName" @bind-Value="@_selectAll" onclick="@(()=>SelectAll(item.Name))" />
+                    <RadzenLabel Text="全选" Component="@item.DisplayName" />
+                </RadzenStack>
+                <RadzenStack Orientation="Orientation.Vertical" Gap="0" class="rz-pt-1" 
+                            Style="border-top: var(--rz-grid-cell-border); min-height: 2rem; max-height: 12rem; overflow: auto;" />
+
                 <RadzenTree Style="width: 100%; height: 100%"
                             Data=@(_permissionTrees.Where(x=>x.GroupName==item.Name))>
                     <RadzenTreeLevel TextProperty="@nameof(PermissionTreeItemVm.DisplayName)"
@@ -23,7 +38,7 @@
                                                 Name="@treeItem.Name"
                                                 onclick="@(()=>PermissionCheckChanged(context.Value))"
                                                 @bind-Value="treeItem.IsGranted" />
-                                <RadzenLabel Text="@context.Text" Component="@treeItem.Name" class="rz-ms-2" />
+                                <RadzenLabel Text="@context.Text" Component="@treeItem.Name" />
                             }
                         </Template>
                     </RadzenTreeLevel>
@@ -49,48 +64,8 @@
     int _grantedPermissionCount = 0;
     int _notGrantedPermissionCount = 0;
     bool _selectAllDisabled;
-    Dictionary<string, int> _permissionDepths = new Dictionary<string, int>();
+    bool _selectAll;
     List<PermissionTreeItemVm> _permissionTrees = [];
-
-    protected bool GrantAll
-    {
-        get
-        {
-            if (_notGrantedPermissionCount == 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-        set
-        {
-            if (_groups == null)
-            {
-                return;
-            }
-
-            _grantedPermissionCount = 0;
-            _notGrantedPermissionCount = 0;
-
-            foreach (var permission in _groups.SelectMany(x => x.Permissions))
-            {
-                if (!IsDisabledPermission(permission))
-                {
-                    permission.IsGranted = value;
-
-                    if (value)
-                    {
-                        _grantedPermissionCount++;
-                    }
-                    else
-                    {
-                        _notGrantedPermissionCount++;
-                    }
-                }
-            }
-        }
-    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -168,7 +143,7 @@
         else
         {
             // 取消所有子节点
-            UnGrantAllChildren(treeItem);
+            GrantAllChildren(treeItem, false);
         }
 
         StateHasChanged();
@@ -188,12 +163,21 @@
         }
     }
 
-    void UnGrantAllChildren(PermissionTreeItemVm treeItem)
+    void GrantAllChildren(PermissionTreeItemVm treeItem, bool isGranted)
     {
         foreach (var child in treeItem.Children)
         {
-            child.IsGranted = false;
-            UnGrantAllChildren(child);
+            child.IsGranted = isGranted;
+            GrantAllChildren(child, isGranted);
+        }
+    }
+
+    void SelectAll(string groupName)
+    {
+        foreach (var item in _permissionTrees.Where(i => i.GroupName == groupName))
+        {
+            item.IsGranted = _selectAll;
+            GrantAllChildren(item, _selectAll);
         }
     }
 
@@ -232,7 +216,7 @@
         }
     }
 
-    public List<UpdatePermissionDto> GetAllTreeItemes(List<PermissionTreeItemVm> treeItems)
+    List<UpdatePermissionDto> GetAllTreeItemes(List<PermissionTreeItemVm> treeItems)
     {
         var result = new List<UpdatePermissionDto>();
         foreach (var item in treeItems)
