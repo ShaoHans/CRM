@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace CRM.Blazor.Web.Models;
+﻿namespace CRM.Blazor.Web.Models;
 
 public class PermissionGroupVm
 {
@@ -10,7 +8,7 @@ public class PermissionGroupVm
 
     public bool GrantAll
     {
-        get { return Expand().All(x => x.IsGranted); }
+        get { return Expand().All(x => x.Permission.IsGranted); }
         set { Grant(value); }
     }
 
@@ -44,7 +42,7 @@ public class PermissionGroupVm
     {
         foreach (var item in TreeItems)
         {
-            item.IsGranted = isGranted;
+            item.Permission.IsGranted = isGranted;
             GrantAllChildren(item.Children, isGranted);
         }
 
@@ -52,7 +50,7 @@ public class PermissionGroupVm
         {
             foreach (var child in children)
             {
-                child.IsGranted = isGranted;
+                child.Permission.IsGranted = isGranted;
                 GrantAllChildren(child.Children, isGranted);
             }
         }

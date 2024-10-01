@@ -6,13 +6,7 @@ public class PermissionTreeItemVm
 {
     public int Depth { get; set; }
 
-    public string Name { get; set; } = default!;
-
-    public string DisplayName { get; set; } = default!;
-
-    public string? ParentName { get; set; } = null;
-
-    public bool IsGranted { get; set; }
+    public PermissionGrantInfoDto Permission { get; set; }
 
     public PermissionTreeItemVm? Parent { get; set; }
 
@@ -21,10 +15,7 @@ public class PermissionTreeItemVm
     public PermissionTreeItemVm(int depth, PermissionGrantInfoDto permission)
     {
         Depth = depth;
-        Name = permission.Name;
-        DisplayName = permission.DisplayName;
-        ParentName = permission.ParentName;
-        IsGranted = permission.IsGranted;
+        Permission = permission;
     }
 
     public void SetParent(PermissionTreeItemVm? parent)

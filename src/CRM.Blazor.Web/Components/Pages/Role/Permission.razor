@@ -27,7 +27,7 @@
 
                 <RadzenTree Style="width: 100%; height: 100%"
                             Data=@item.TreeItems>
-                    <RadzenTreeLevel TextProperty="@nameof(PermissionTreeItemVm.DisplayName)"
+                    <RadzenTreeLevel Text="(i=>((PermissionTreeItemVm)i).Permission.DisplayName)"
                                      ChildrenProperty="Children"
                                      Expanded="(i=>true)"
                                      HasChildren="(i=>((PermissionTreeItemVm)i).Children.Count>0)">
@@ -35,11 +35,11 @@
                             @{
                                 var treeItem = (PermissionTreeItemVm)context.Value;
                                 <RadzenCheckBox TValue="bool"
-                                                Name="@treeItem.Name"
-                                                Disabled="@_disabledPermissions.Exists(x=>x.Name==treeItem.Name)"
+                                                Name="@treeItem.Permission.Name"
+                                                Disabled="@_disabledPermissions.Exists(x=>x.Name==treeItem.Permission.Name)"
                                                 onclick="@(()=>PermissionCheckChanged(context.Value))"
-                                                @bind-Value="treeItem.IsGranted" />
-                                <RadzenLabel Text="@context.Text" Component="@treeItem.Name" />
+                                                @bind-Value="treeItem.Permission.IsGranted" />
+                                <RadzenLabel Text="@context.Text" Component="@treeItem.Permission.Name" />
                             }
                         </Template>
                     </RadzenTreeLevel>
@@ -73,6 +73,8 @@
         var result = await PermissionAppService.GetAsync(ProviderName, ProviderKey);
 
         //_groups = result.Groups;
+        _grantedPermissionCount = 0;
+        _notGrantedPermissionCount = 0;
 
         foreach (var group in result.Groups)
         {
@@ -86,8 +88,6 @@
 
         //_selectAllDisabled = _groups.All(IsPermissionGroupDisabled);
 
-        _grantedPermissionCount = 0;
-        _notGrantedPermissionCount = 0;
         foreach (var permission in result.Groups.SelectMany(x => x.Permissions))
         {
             if (permission.IsGranted && permission.GrantedProviders.All(x => x.ProviderName != ProviderName))
@@ -139,7 +139,7 @@
     {
         var treeItem = (PermissionTreeItemVm)obj;
 
-        if (treeItem.IsGranted)
+        if (treeItem.Permission.IsGranted)
         {
             // 选中所有直接父节点
             GrantAllDirectParents(treeItem);
@@ -158,7 +158,7 @@
         var parentTreeItem = treeItem.Parent;
         while (parentTreeItem != null)
         {
-            parentTreeItem.IsGranted = true;
+            parentTreeItem.Permission.IsGranted = true;
             parentTreeItem = parentTreeItem.Parent;
             if (parentTreeItem == null)
             {
@@ -171,7 +171,7 @@
     {
         foreach (var child in treeItem.Children)
         {
-            child.IsGranted = isGranted;
+            child.Permission.IsGranted = isGranted;
             GrantAllChildren(child, isGranted);
         }
     }
@@ -194,8 +194,8 @@
                 {
                     Permissions = treeItems.Select(x => new UpdatePermissionDto
                     {
-                        IsGranted = x.IsGranted,
-                        Name = x.Name
+                        IsGranted = x.Permission.IsGranted,
+                        Name = x.Permission.Name
                     }).ToArray()
                 };
 
