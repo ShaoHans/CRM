@@ -77,7 +77,7 @@
 
     private async Task OpenCreateRoleDialog()
     {
-        await DialogService.OpenAsync<Create>("添加角色",
+        bool result = await DialogService.OpenAsync<Create>("添加角色",
                options: new DialogOptions()
                    {
                        Draggable = true,
@@ -85,12 +85,15 @@
                        Height = "450px"
                    });
 
-        await LoadRolesAsync();
+        if (result)
+        {
+            await LoadRolesAsync();
+        }
     }
 
     private async Task OpenEditRoleDialog(IdentityRoleDto role)
     {
-        await DialogService.OpenAsync<Edit>("编辑角色",
+        bool result = await DialogService.OpenAsync<Edit>("编辑角色",
                new Dictionary<string, object>() { { "Role", role } },
                options: new DialogOptions()
                    {
@@ -99,7 +102,10 @@
                        Height = "450px"
                    });
 
-        await LoadRolesAsync();
+        if (result)
+        {
+            await LoadRolesAsync();
+        }
     }
 
     private async Task OpenAssignPermissionDialog(IdentityRoleDto role)

@@ -7,7 +7,7 @@
 <PageTitle>用户列表</PageTitle>
 <RadzenDataGrid Data="@users" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" 
-                Page="@OnPageAsync" Count="@totalCount" PageSizeChanged="@OnPageSizeChangedAsync" IsLoading="@isLoading">
+                Page="@OnPageAsync" @bind-Count="@totalCount" PageSizeChanged="@OnPageSizeChangedAsync" IsLoading="@isLoading">
     <HeaderTemplate>
         <RadzenButton Icon="add" Text="添加用户" Click="OpenCreateUserDialog" />
     </HeaderTemplate>
@@ -47,18 +47,17 @@
     [Inject]
     public IIdentityUserAppService UserAppService { get; set; } = default!;
 
-    IEnumerable<int> pageSizeOptions = new int[] { 2, 10, 20, 30 };
-    IEnumerable<IdentityUserDto> users = new List<IdentityUserDto>();
+    IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30 };
+    IEnumerable<IdentityUserDto> users = [];
     bool showPagerSummary = true;
     int totalCount = 0;
     bool isLoading = true;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
-        {
-            await LoadUsersAsync();
-        }
+        await base.OnInitializedAsync();
+
+        await LoadUsersAsync();
     }
 
     private async Task OnPageAsync(PagerEventArgs args)
@@ -88,7 +87,7 @@
 
     private async Task OpenCreateUserDialog()
     {
-        await DialogService.OpenAsync<Create>("添加用户",
+        bool result = await DialogService.OpenAsync<Create>("添加用户",
                options: new DialogOptions()
                    {
                        Draggable = true,
@@ -96,12 +95,15 @@
                        Height = "740px"
                    });
 
-        await LoadUsersAsync();
+        if (result)
+        {
+            await LoadUsersAsync();
+        }
     }
 
     private async Task OpenEditUserDialog(IdentityUserDto user)
     {
-        await DialogService.OpenAsync<Edit>("编辑用户",
+        bool result = await DialogService.OpenAsync<Edit>("编辑用户",
                new Dictionary<string, object>() { { "User", user } },
                options: new DialogOptions()
                    {
@@ -110,7 +112,10 @@
                        Height = "740px",
                    });
 
-        await LoadUsersAsync();
+        if (result)
+        {
+            await LoadUsersAsync();
+        }
     }
 
     private async Task OpenAssignPermissionDialog(IdentityUserDto user)

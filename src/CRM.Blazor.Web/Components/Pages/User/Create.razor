@@ -72,7 +72,7 @@
     <div class="dialog-footer">
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
             <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="保存"></RadzenButton>
-            <RadzenButton Icon="cancel" Click="()=>DialogService.Close(true)" Text="取消" ButtonStyle="ButtonStyle.Light" />
+            <RadzenButton Icon="cancel" Click="()=>DialogService.Close(false)" Text="取消" ButtonStyle="ButtonStyle.Light" />
         </RadzenStack>
     </div>
 </RadzenTemplateForm>
@@ -106,8 +106,8 @@
         try
         {
             await UserAppService.CreateAsync(model);
-            NavigationManager.NavigateTo("/user/list");
             NotificationService.Success("保存成功");
+            DialogService.Close(true);
         }
         catch (Exception ex)
         {
