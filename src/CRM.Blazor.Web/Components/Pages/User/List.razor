@@ -9,7 +9,7 @@
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" 
                 Page="@OnPageAsync" Count="@totalCount" PageSizeChanged="@OnPageSizeChangedAsync" IsLoading="@isLoading">
     <HeaderTemplate>
-        <RadzenButton Text="添加用户" Click="OpenCreateUserDialog" />
+        <RadzenButton Icon="add" Text="添加用户" Click="OpenCreateUserDialog" />
     </HeaderTemplate>
     <Columns>
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Id)" Title="ID" Width="80px" Visible="false" />

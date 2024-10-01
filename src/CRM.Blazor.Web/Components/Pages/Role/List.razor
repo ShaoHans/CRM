@@ -9,7 +9,7 @@
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary"
                 Page="@OnPageAsync" Count="@totalCount" PageSizeChanged="@OnPageSizeChangedAsync" IsLoading="@isLoading">
     <HeaderTemplate>
-        <RadzenButton Text="添加角色" Click="OpenCreateRoleDialog" />
+        <RadzenButton Icon="add" Text="添加角色" Click="OpenCreateRoleDialog" />
     </HeaderTemplate>
     <Columns>
         <RadzenDataGridColumn Title="角色名称">
