@@ -62,8 +62,6 @@
     List<PermissionGroupVm> _groups = [];
     List<PermissionGrantInfoDto> _disabledPermissions = [];
 
-    int _grantedPermissionCount = 0;
-    int _notGrantedPermissionCount = 0;
     bool _selectAllDisabled;
 
     protected override async Task OnInitializedAsync()
@@ -71,9 +69,6 @@
         await base.OnInitializedAsync();
 
         var result = await PermissionAppService.GetAsync(ProviderName, ProviderKey);
-
-        _grantedPermissionCount = 0;
-        _notGrantedPermissionCount = 0;
 
         foreach (var group in result.Groups)
         {
@@ -92,16 +87,6 @@
             if (permission.IsGranted && permission.GrantedProviders.All(x => x.ProviderName != ProviderName))
             {
                 _disabledPermissions.Add(permission);
-                continue;
-            }
-
-            if (permission.IsGranted)
-            {
-                _grantedPermissionCount++;
-            }
-            else
-            {
-                _notGrantedPermissionCount++;
             }
         }
     }
