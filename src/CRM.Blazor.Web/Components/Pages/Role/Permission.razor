@@ -187,9 +187,15 @@
     {
         try
         {
+            var treeItems = new List<PermissionTreeItemVm>();
+            _groups.ForEach(x => treeItems.AddRange(x.Expand()));
             var updateDto = new UpdatePermissionsDto
                 {
-                    Permissions = GetAllTreeItemes(_groups.SelectMany(x => x.TreeItems).ToList()).ToArray(),
+                    Permissions = treeItems.Select(x => new UpdatePermissionDto
+                    {
+                        IsGranted = x.IsGranted,
+                        Name = x.Name
+                    }).ToArray()
                 };
 
             if (!updateDto.Permissions.Any(x => x.IsGranted))
@@ -216,22 +222,6 @@
         {
             NotificationService.Error(ex.Message);
         }
-    }
-
-    List<UpdatePermissionDto> GetAllTreeItemes(List<PermissionTreeItemVm> treeItems)
-    {
-        var result = new List<UpdatePermissionDto>();
-        foreach (var item in treeItems)
-        {
-            result.Add(new UpdatePermissionDto
-            {
-                Name = item.Name,
-                IsGranted = item.IsGranted
-            });
-            result.AddRange(GetAllTreeItemes(item.Children));
-        }
-
-        return result;
     }
 
 }
