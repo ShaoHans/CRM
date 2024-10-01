@@ -7,7 +7,7 @@
 
 
 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start">
-    <RadzenCheckBox TValue="bool" Name="GrantAll" Value="@(_groups.All(x=>x.GrantAll))" ValueChanged="GrantAll" />
+    <RadzenCheckBox TValue="bool" Name="GrantAll" Disabled="_selectAllDisabled" Value="@(_groups.All(x=>x.GrantAll))" ValueChanged="GrantAll" />
     <RadzenLabel Text="授予所有权限" Component="GrantAll" />
 </RadzenStack>
 <RadzenStack Orientation="Orientation.Vertical" Gap="0" class="rz-pt-1"
@@ -19,7 +19,7 @@
         {
             <RadzenTabsItem Text="@item.DisplayName">
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start">
-                    <RadzenCheckBox TValue="bool" Name="@item.DisplayName" @bind-Value="@item.GrantAll" />
+                    <RadzenCheckBox TValue="bool" Name="@item.DisplayName" @bind-Value="@item.GrantAll" Disabled="IsPermissionGroupDisabled(item)" />
                     <RadzenLabel Text="全选" Component="@item.DisplayName" />
                 </RadzenStack>
                 <RadzenStack Orientation="Orientation.Vertical" Gap="0" class="rz-pt-1" 
@@ -72,7 +72,6 @@
 
         var result = await PermissionAppService.GetAsync(ProviderName, ProviderKey);
 
-        //_groups = result.Groups;
         _grantedPermissionCount = 0;
         _notGrantedPermissionCount = 0;
 
@@ -86,7 +85,7 @@
                 });
         }
 
-        //_selectAllDisabled = _groups.All(IsPermissionGroupDisabled);
+        _selectAllDisabled = _groups.All(IsPermissionGroupDisabled);
 
         foreach (var permission in result.Groups.SelectMany(x => x.Permissions))
         {
@@ -107,12 +106,12 @@
         }
     }
 
-    bool IsPermissionGroupDisabled(PermissionGroupDto group)
+    bool IsPermissionGroupDisabled(PermissionGroupVm group)
     {
-        var permissions = group.Permissions;
-        var grantedProviders = permissions.SelectMany(x => x.GrantedProviders);
+        var permissions = group.Expand();
+        var grantedProviders = permissions.SelectMany(x => x.Permission.GrantedProviders);
 
-        return permissions.All(x => x.IsGranted) && grantedProviders.Any(p => p.ProviderName != ProviderName);
+        return permissions.All(x => x.Permission.IsGranted) && grantedProviders.Any(p => p.ProviderName != ProviderName);
     }
 
     List<PermissionTreeItemVm> GenerateTree(List<PermissionGrantInfoDto> allPermissions, string? parentName, int depth, PermissionTreeItemVm? parent)
