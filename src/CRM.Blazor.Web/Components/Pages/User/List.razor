@@ -115,11 +115,11 @@
 
     private async Task OpenAssignPermissionDialog(IdentityUserDto user)
     {
-        await DialogService.OpenAsync<Role.Permission>($"分配权限 - {user.Name}",
+        await DialogService.OpenAsync<Role.Permission>($"分配权限 - {user.UserName}",
                parameters: new Dictionary<string, object>()
                            {
-                           { "ProviderName", "U" },
-                           { "ProviderKey", user.Id.ToString() }
+                               { "ProviderName", "U" },
+                               { "ProviderKey", user.Id.ToString() }
                            },
                options: new DialogOptions()
                    {
@@ -127,7 +127,6 @@
                        Width = "800px",
                        Height = "700px"
                    });
-
     }
 
     private async Task ShowDeleteConfirmDialogAsync(Guid userId)
@@ -138,6 +137,7 @@
                     OkButtonText = "确定", 
                     CancelButtonText = "取消" 
                 });
+
         if (result == true)
         {
             await UserAppService.DeleteAsync(userId);

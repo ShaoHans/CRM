@@ -36,6 +36,7 @@
                                 var treeItem = (PermissionTreeItemVm)context.Value;
                                 <RadzenCheckBox TValue="bool"
                                                 Name="@treeItem.Name"
+                                                Disabled="@_disabledPermissions.Exists(x=>x.Name==treeItem.Name)"
                                                 onclick="@(()=>PermissionCheckChanged(context.Value))"
                                                 @bind-Value="treeItem.IsGranted" />
                                 <RadzenLabel Text="@context.Text" Component="@treeItem.Name" />
@@ -87,23 +88,23 @@
 
         _grantedPermissionCount = 0;
         _notGrantedPermissionCount = 0;
-        // foreach (var permission in _groups.SelectMany(x => x.Permissions))
-        // {
-        //     if (permission.IsGranted && permission.GrantedProviders.All(x => x.ProviderName != ProviderName))
-        //     {
-        //         _disabledPermissions.Add(permission);
-        //         continue;
-        //     }
+        foreach (var permission in result.Groups.SelectMany(x => x.Permissions))
+        {
+            if (permission.IsGranted && permission.GrantedProviders.All(x => x.ProviderName != ProviderName))
+            {
+                _disabledPermissions.Add(permission);
+                continue;
+            }
 
-        //     if (permission.IsGranted)
-        //     {
-        //         _grantedPermissionCount++;
-        //     }
-        //     else
-        //     {
-        //         _notGrantedPermissionCount++;
-        //     }
-        // }
+            if (permission.IsGranted)
+            {
+                _grantedPermissionCount++;
+            }
+            else
+            {
+                _notGrantedPermissionCount++;
+            }
+        }
     }
 
     bool IsPermissionGroupDisabled(PermissionGroupDto group)
