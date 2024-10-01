@@ -1,5 +1,6 @@
 ﻿@using Volo.Abp.Identity
 @inject NotificationService NotificationService
+@inject DialogService DialogService
 
 <RadzenTemplateForm TItem="IdentityUserUpdateDto" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
     <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
@@ -65,12 +66,13 @@
                                 Multiple=true AllowClear=true Placeholder="分配角色" Chips=true Style="width: 100%;" />
             </RadzenColumn>
         </RadzenRow>
-        <RadzenRow AlignItems="AlignItems.Center" class="rz-mt-4">
-            <RadzenColumn Size="12" Offset="0" SizeMD="8" OffsetMD="4">
-                <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="保存"></RadzenButton>
-            </RadzenColumn>
-        </RadzenRow>
     </RadzenStack>
+    <div class="dialog-footer">
+        <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
+            <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="保存"></RadzenButton>
+            <RadzenButton Icon="cancel" Click="()=>DialogService.Close(true)" Text="取消" ButtonStyle="ButtonStyle.Light" />
+        </RadzenStack>
+    </div>
 </RadzenTemplateForm>
 
 @code {
