@@ -30,8 +30,9 @@
         <RadzenDataGridColumn Title="操作" Width="160px">
             <Template>
                 <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
-                            Click="@(async () => await OpenEditUserDialog(context))"/>
-                <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning" />
+                              Click="@(async () => await OpenEditUserDialog(context))" />
+                <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning"
+                              Click="@(async () => await OpenAssignPermissionDialog(context))" />
                 @if (context.UserName != "admin")
                 {
                     <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
@@ -110,6 +111,23 @@
                    });
 
         await LoadUsersAsync();
+    }
+
+    private async Task OpenAssignPermissionDialog(IdentityUserDto user)
+    {
+        await DialogService.OpenAsync<Role.Permission>($"分配权限 - {user.Name}",
+               parameters: new Dictionary<string, object>()
+                           {
+                           { "ProviderName", "U" },
+                           { "ProviderKey", user.Id.ToString() }
+                           },
+               options: new DialogOptions()
+                   {
+                       Draggable = true,
+                       Width = "800px",
+                       Height = "700px"
+                   });
+
     }
 
     private async Task ShowDeleteConfirmDialogAsync(Guid userId)
