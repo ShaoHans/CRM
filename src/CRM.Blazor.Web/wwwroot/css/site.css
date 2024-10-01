@@ -629,3 +629,14 @@ svg.illustration {
     width: 100%;
     height: 100%;
 }
+
+.dialog-footer {
+    position: absolute;
+    bottom: 0;
+    width: calc(100% - 30px);
+    display: flex;
+    justify-content: flex-end; /* 或者使用center来居中 */
+    padding: 10px; /* 添加一些内边距 */
+    border-top: 1px solid var(--rz-primary); /* 设置横线颜色和宽度 */
+    margin-bottom: 10px; /* 为横线和按钮之间增加间距 */
+}

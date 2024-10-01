@@ -49,9 +49,12 @@
     </Tabs>
 </RadzenTabs>
 
-<RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Center" >
-    <RadzenButton Icon="save" Click="SaveAsync" Text="保存" ButtonStyle="ButtonStyle.Primary" />
-</RadzenStack>
+<div class="dialog-footer">
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
+        <RadzenButton Icon="save" Click="SaveAsync" Text="保存" ButtonStyle="ButtonStyle.Primary" />
+        <RadzenButton Icon="cancel" Click="()=>DialogService.Close(true)" Text="取消" ButtonStyle="ButtonStyle.Light" />
+    </RadzenStack>
+</div>
 
 @code {
     [Parameter]
