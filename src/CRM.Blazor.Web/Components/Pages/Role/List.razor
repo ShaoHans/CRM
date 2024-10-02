@@ -5,21 +5,21 @@
 @inject NotificationService NotificationService
 
 <PageTitle>角色列表</PageTitle>
-<RadzenDataGrid Data="@roles" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
+<RadzenDataGrid @ref="_grid" Data="@roles" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary"
-                Page="@OnPageAsync" Count="@totalCount" PageSizeChanged="@OnPageSizeChangedAsync" IsLoading="@isLoading">
+                LoadData="LoadRolesAsync" Count="@totalCount" IsLoading="@isLoading">
     <HeaderTemplate>
         <RadzenButton Icon="add" Text="添加角色" Click="OpenCreateRoleDialog" />
     </HeaderTemplate>
     <Columns>
-        <RadzenDataGridColumn Title="角色名称">
+        <RadzenDataGridColumn Title="角色名称" Property="@nameof(IdentityRoleDto.Name)">
             <Template>
                 <RadzenLabel Text="@context.Name" />
                 <RadzenBadge Text="默认" Visible="context.IsDefault" BadgeStyle="BadgeStyle.Success" />
                 <RadzenBadge Text="公开" Visible="context.IsPublic" BadgeStyle="BadgeStyle.Info" />
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn Title="操作" Width="160px">
+        <RadzenDataGridColumn Title="操作" Width="160px" Sortable="false">
             <Template>
                 <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
                               Click="@(async () => await OpenEditRoleDialog(context))" />
@@ -36,37 +36,29 @@
 </RadzenDataGrid>
 
 @code {
+    RadzenDataGrid<IdentityRoleDto> _grid = default!;
     IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30 };
     IEnumerable<IdentityRoleDto> roles = [];
     bool showPagerSummary = true;
     int totalCount = 0;
     bool isLoading = true;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if (firstRender)
-        {
-            await LoadRolesAsync();
-        }
+        await base.OnInitializedAsync();
+        await LoadRolesAsync(new LoadDataArgs());
     }
 
-    private async Task OnPageAsync(PagerEventArgs args)
-    {
-        await LoadRolesAsync(args.Skip, args.Top);
-    }
-
-    private async Task OnPageSizeChangedAsync(int pageSize)
-    {
-        await LoadRolesAsync(0, pageSize);
-    }
-
-    private async Task LoadRolesAsync(int skipCount = 0, int maxResultCount = 10)
+    
+    private async Task LoadRolesAsync(LoadDataArgs args)
     {
         isLoading = true;
         var result = await RoleAppService.GetListAsync(new GetIdentityRolesInput
             {
-                SkipCount = skipCount,
-                MaxResultCount = maxResultCount,
+                SkipCount = args.Skip ?? 0,
+                MaxResultCount = args.Top ?? 10,
+                Filter = args.Filter,
+                Sorting = args.OrderBy
             });
 
         roles = result.Items;
@@ -87,7 +79,7 @@
 
         if (result)
         {
-            await LoadRolesAsync();
+            await _grid.Reload();
         }
     }
 
@@ -104,7 +96,7 @@
 
         if (result)
         {
-            await LoadRolesAsync();
+            await _grid.Reload();
         }
     }
 
@@ -132,10 +124,11 @@
                         OkButtonText = "确定",
                         CancelButtonText = "取消"
                     });
+
         if (result == true)
         {
             await RoleAppService.DeleteAsync(roleId);
-            await LoadRolesAsync();
+            await _grid.Reload();
             NotificationService.Success("删除成功");
         }
     }
