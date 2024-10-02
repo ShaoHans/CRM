@@ -29,12 +29,29 @@
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="手机号码" Width="160px" />
         <RadzenDataGridColumn Title="启用" Width="60px" Filterable="false" Sortable="false">
             <Template>
-                <RadzenCheckBox TValue="bool" Value="@(context.IsActive)" ReadOnly="true" />
+                @if (context.IsActive)
+                {
+                    <b><RadzenIcon Icon="done" IconColor="@Colors.Success" /></b>
+                }
+                else
+                {
+                    <b><RadzenIcon Icon="dangerous" IconColor="@Colors.Danger" /></b>
+                }
+                @* <RadzenSwitch Value="@context.IsActive"  Disabled="true" Name="False" /> *@
+                @* <RadzenCheckBox TValue="bool" Value="@(context.IsActive)" ReadOnly="true" /> *@
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Title="账户锁定" Width="80px" Filterable="false" Sortable="false">
             <Template>
-                <RadzenCheckBox TValue="bool" Value="@(context.LockoutEnabled)" ReadOnly="true" />
+                @if (context.LockoutEnabled)
+                {
+                    <b><RadzenIcon Icon="done" IconColor="@Colors.Success" /></b>
+                }
+                else
+                {
+                    <b><RadzenIcon Icon="dangerous" IconColor="@Colors.Danger" /></b>
+                }
+                @* <RadzenCheckBox TValue="bool" Value="@(context.LockoutEnabled)" ReadOnly="true" /> *@
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.CreationTime)" Filterable="false" Title="添加时间" Width="160px" />
