@@ -6,10 +6,10 @@
 @inject IIdentityUserAppService UserAppService
 
 <PageTitle>用户列表</PageTitle>
-<RadzenDataGrid Data="@users" AllowPaging="true" AllowSorting="true"
+<RadzenDataGrid @ref="_grid" Data="@users" AllowPaging="true" AllowSorting="true"
                 PagerHorizontalAlign="HorizontalAlign.Center"
-                PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" LoadData="LoadDataAsync"
-                Count="@totalCount" PageSizeChanged="@OnPageSizeChangedAsync" IsLoading="@isLoading">
+                PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" LoadData="LoadUsersAsync"
+                Count="@totalCount" IsLoading="@isLoading">
     <HeaderTemplate>
         <RadzenButton Icon="add" Text="添加用户" Click="OpenCreateUserDialog" />
         @* <RadzenFormField Variant="Variant.Outlined">
@@ -20,25 +20,24 @@
                 <RadzenIcon Icon="search" IconStyle="IconStyle.Secondary" />
             </End>
         </RadzenFormField> *@
-        
     </HeaderTemplate>
     <Columns>
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Id)" Title="ID" Width="80px" Visible="false" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.UserName)" Title="用户名" Width="160px" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Email)" Title="邮箱" Width="160px" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="手机号码" Width="160px" />
-        <RadzenDataGridColumn Title="启用" Width="60px" Filterable="false">
+        <RadzenDataGridColumn Title="启用" Width="60px" Filterable="false" Sortable="false">
             <Template>
                 <RadzenCheckBox TValue="bool" Value="@(context.IsActive)" ReadOnly="true" />
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn Title="账户锁定" Width="80px" Filterable="false">
+        <RadzenDataGridColumn Title="账户锁定" Width="80px" Filterable="false" Sortable="false">
             <Template>
                 <RadzenCheckBox TValue="bool" Value="@(context.LockoutEnabled)" ReadOnly="true" />
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.CreationTime)" Filterable="false" Title="添加时间" Width="160px" />
-        <RadzenDataGridColumn Title="操作" Width="160px" Filterable="false">
+        <RadzenDataGridColumn Title="操作" Width="160px" Filterable="false" Sortable="false">
             <Template>
                 <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
                               Click="@(async () => await OpenEditUserDialog(context))" />
@@ -55,6 +54,7 @@
 </RadzenDataGrid>
 
 @code {
+    RadzenDataGrid<IdentityUserDto> _grid = default!;
     IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30 };
     IEnumerable<IdentityUserDto> users = [];
     bool showPagerSummary = true;
@@ -65,26 +65,18 @@
     {
         await base.OnInitializedAsync();
 
-        await LoadUsersAsync();
+        await LoadUsersAsync(new LoadDataArgs { });
     }
 
-    async Task OnPageSizeChangedAsync(int pageSize)
-    {
-        await LoadUsersAsync(0, pageSize);
-    }
-
-    async Task LoadDataAsync(LoadDataArgs args)
-    {
-        await LoadUsersAsync(args.Skip!.Value, args.Top!.Value);
-    }
-
-    async Task LoadUsersAsync(int skipCount = 0, int maxResultCount = 10)
+    async Task LoadUsersAsync(LoadDataArgs args)
     {
         isLoading = true;
         var result = await UserAppService.GetListAsync(new GetIdentityUsersInput
             {
-                SkipCount = skipCount,
-                MaxResultCount = maxResultCount,
+                SkipCount = args.Skip??0,
+                MaxResultCount = args.Top??10,
+                Filter = args.Filter,
+                Sorting = args.OrderBy
             });
 
         users = result.Items;
@@ -105,7 +97,7 @@
 
         if (result)
         {
-            await LoadUsersAsync();
+            await _grid.Reload();
         }
     }
 
@@ -122,7 +114,7 @@
 
         if (result)
         {
-            await LoadUsersAsync();
+            await _grid.Reload();
         }
     }
 
@@ -154,7 +146,7 @@
         if (result == true)
         {
             await UserAppService.DeleteAsync(userId);
-            await LoadUsersAsync();
+            await _grid.Reload();
             NotificationService.Success("删除成功");
         }
     }
