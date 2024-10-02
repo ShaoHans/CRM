@@ -12,6 +12,7 @@
                 Count="@totalCount" IsLoading="@isLoading">
     <HeaderTemplate>
         <RadzenButton Icon="add" Text="添加用户" Click="OpenCreateUserDialog" />
+        <RadzenTextBox Placeholder="用户名/邮箱/手机号码" />
         @* <RadzenFormField Variant="Variant.Outlined">
             <ChildContent>
                 <RadzenTextBox />
@@ -73,8 +74,8 @@
         isLoading = true;
         var result = await UserAppService.GetListAsync(new GetIdentityUsersInput
             {
-                SkipCount = args.Skip??0,
-                MaxResultCount = args.Top??10,
+                SkipCount = args.Skip ?? 0,
+                MaxResultCount = args.Top ?? 10,
                 Filter = args.Filter,
                 Sorting = args.OrderBy
             });

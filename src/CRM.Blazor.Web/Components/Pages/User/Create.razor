@@ -98,7 +98,7 @@
 
     void RolesChange(IEnumerable<string> values)
     {
-        model.RoleNames = values.ToArray();
+        model.RoleNames = values is null ? [] : values.ToArray();
     }
 
     async Task OnSubmit(IdentityUserCreateDto model)
