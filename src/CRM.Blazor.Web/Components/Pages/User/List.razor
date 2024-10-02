@@ -29,28 +29,14 @@
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="手机号码" Width="160px" />
         <RadzenDataGridColumn Title="启用" Width="60px" Filterable="false" Sortable="false">
             <Template>
-                @if (context.IsActive)
-                {
-                    <b><RadzenIcon Icon="done" IconColor="@Colors.Success" /></b>
-                }
-                else
-                {
-                    <b><RadzenIcon Icon="dangerous" IconColor="@Colors.Danger" /></b>
-                }
+                <BooleanIcon Value="@context.IsActive" />
                 @* <RadzenSwitch Value="@context.IsActive"  Disabled="true" Name="False" /> *@
                 @* <RadzenCheckBox TValue="bool" Value="@(context.IsActive)" ReadOnly="true" /> *@
             </Template>
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Title="账户锁定" Width="80px" Filterable="false" Sortable="false">
             <Template>
-                @if (context.LockoutEnabled)
-                {
-                    <b><RadzenIcon Icon="done" IconColor="@Colors.Success" /></b>
-                }
-                else
-                {
-                    <b><RadzenIcon Icon="dangerous" IconColor="@Colors.Danger" /></b>
-                }
+                <BooleanIcon Value="@context.LockoutEnabled" />
                 @* <RadzenCheckBox TValue="bool" Value="@(context.LockoutEnabled)" ReadOnly="true" /> *@
             </Template>
         </RadzenDataGridColumn>
