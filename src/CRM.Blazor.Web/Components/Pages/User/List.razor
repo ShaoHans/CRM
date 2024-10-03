@@ -6,22 +6,29 @@
 @inject IIdentityUserAppService UserAppService
 
 <PageTitle>用户列表</PageTitle>
+
+<RadzenCard class="rz-my-6">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
+        <RadzenStack Orientation="Orientation.Vertical" Gap="4px">
+            <RadzenButton Icon="add" Text="添加用户" Click="OpenCreateUserDialog" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Vertical" style="margin-left: auto;" Gap="4px">
+            <RadzenFormField Text="用户名/邮箱/手机号码" Variant="Variant.Outlined">
+                <ChildContent>
+                    <RadzenTextBox @bind-Value="@_keyword" @oninput="(e) => _keyword = e.Value?.ToString()" @onkeydown="SearchAsync" />
+                </ChildContent>
+                <End>
+                    <RadzenIcon Icon="search" IconStyle="IconStyle.Secondary" />
+                </End>
+            </RadzenFormField>
+        </RadzenStack>
+    </RadzenStack>
+</RadzenCard>
+
 <RadzenDataGrid @ref="_grid" Data="@users" AllowPaging="true" AllowSorting="true"
                 PagerHorizontalAlign="HorizontalAlign.Center"
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" LoadData="LoadUsersAsync"
-                Count="@totalCount" IsLoading="@isLoading">
-    <HeaderTemplate>
-        <RadzenButton Icon="add" Text="添加用户" Click="OpenCreateUserDialog" />
-        <RadzenTextBox Placeholder="用户名/邮箱/手机号码" />
-        @* <RadzenFormField Variant="Variant.Outlined">
-            <ChildContent>
-                <RadzenTextBox />
-            </ChildContent>
-            <End>
-                <RadzenIcon Icon="search" IconStyle="IconStyle.Secondary" />
-            </End>
-        </RadzenFormField> *@
-    </HeaderTemplate>
+                Count="@totalCount" IsLoading="@isLoading">    
     <Columns>
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Id)" Title="ID" Width="80px" Visible="false" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.UserName)" Title="用户名" Width="160px" />
@@ -64,6 +71,7 @@
     bool showPagerSummary = true;
     int totalCount = 0;
     bool isLoading = true;
+    string? _keyword = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -79,7 +87,7 @@
             {
                 SkipCount = args.Skip ?? 0,
                 MaxResultCount = args.Top ?? 10,
-                Filter = args.Filter,
+                Filter = _keyword,
                 Sorting = args.OrderBy
             });
 
@@ -152,6 +160,14 @@
             await UserAppService.DeleteAsync(userId);
             await _grid.Reload();
             NotificationService.Success("删除成功");
+        }
+    }
+
+    async Task SearchAsync(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await _grid.Reload();
         }
     }
 }
