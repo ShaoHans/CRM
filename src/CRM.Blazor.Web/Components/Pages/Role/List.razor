@@ -1,6 +1,8 @@
 ﻿@page "/Role/List"
+@using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.Identity
 @using Microsoft.IdentityModel.Tokens
+@attribute [Authorize(IdentityPermissions.Roles.Default)]
 @inject DialogService DialogService
 @inject IIdentityRoleAppService RoleAppService
 @inject NotificationService NotificationService

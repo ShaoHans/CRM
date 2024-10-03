@@ -248,10 +248,10 @@ public class CRMBlazorWebModule : AbpModule
         var env = context.GetEnvironment();
         var app = context.GetApplicationBuilder();
 
-        if (env.IsDevelopment())
-        {
-            app.UseDeveloperExceptionPage();
-        }
+        //if (env.IsDevelopment())
+        //{
+        //    app.UseDeveloperExceptionPage();
+        //}
 
         app.UseAbpRequestLocalization();
 

@@ -1,6 +1,8 @@
 ﻿@page "/User/List"
+@using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.Identity
 @using Volo.Abp.Users
+@attribute [Authorize(IdentityPermissions.Users.Default)]
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject IIdentityUserAppService UserAppService

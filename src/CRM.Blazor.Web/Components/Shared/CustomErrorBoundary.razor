@@ -25,10 +25,14 @@ else if (ErrorContent is not null)
         {
             var authState = await authenticationState;
             var user = authState?.User;
-            
-            if (user?.Identity is not null && !user.Identity.IsAuthenticated)
+
+            if (user?.Identity is null || !user.Identity.IsAuthenticated)
             {
                 NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                NotificationService.Error("Access Denied！");
             }
         }
         else
