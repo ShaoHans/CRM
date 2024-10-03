@@ -13,7 +13,7 @@
             <RadzenButton Icon="add" Text="添加角色" Click="OpenCreateRoleDialog" />
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Vertical" style="margin-left: auto;" Gap="4px">
-            <SearchTextBox PlaceHoder="角色名称" @bind-KeyWord="@_keyword" SearchAsync="@_grid.Reload" />
+            <SearchTextBox PlaceHoder="角色名称" @bind-Keyword="@_keyword" SearchAsync="@_grid.Reload" />
         </RadzenStack>
     </RadzenStack>
 </RadzenCard>
