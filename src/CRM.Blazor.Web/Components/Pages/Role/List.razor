@@ -6,13 +6,22 @@
 @inject NotificationService NotificationService
 
 <PageTitle>角色列表</PageTitle>
-<RadzenDataGrid @ref="_grid" Data="@roles" AllowPaging="true" AllowSorting="true" AllowFiltering="true"
+
+<RadzenCard class="rz-my-6">
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
+        <RadzenStack Orientation="Orientation.Vertical" Gap="4px">
+            <RadzenButton Icon="add" Text="添加角色" Click="OpenCreateRoleDialog" />
+        </RadzenStack>
+        <RadzenStack Orientation="Orientation.Vertical" style="margin-left: auto;" Gap="4px">
+            <SearchTextBox PlaceHoder="角色名称" @bind-KeyWord="@_keyword" SearchAsync="@_grid.Reload" />
+        </RadzenStack>
+    </RadzenStack>
+</RadzenCard>
+
+<RadzenDataGrid @ref="_grid" Data="@roles" AllowPaging="true" AllowSorting="true"
                 PagerHorizontalAlign="HorizontalAlign.Center"
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary"
                 LoadData="LoadRolesAsync" Count="@totalCount" IsLoading="@isLoading">
-    <HeaderTemplate>
-        <RadzenButton Icon="add" Text="添加角色" Click="OpenCreateRoleDialog" />
-    </HeaderTemplate>
     <Columns>
         <RadzenDataGridColumn Title="角色名称" Property="@nameof(IdentityRoleDto.Name)">
             <Template>
@@ -21,7 +30,7 @@
                 <RadzenBadge Text="公开" Visible="context.IsPublic" BadgeStyle="BadgeStyle.Info" />
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn Title="操作" Width="160px" Sortable="false" Filterable="false">
+        <RadzenDataGridColumn Title="操作" Width="160px" Sortable="false">
             <Template>
                 <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
                               Click="@(async () => await OpenEditRoleDialog(context))" />
@@ -44,6 +53,7 @@
     bool showPagerSummary = true;
     int totalCount = 0;
     bool isLoading = true;
+    string? _keyword = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -59,7 +69,7 @@
             {
                 SkipCount = args.Skip ?? 0,
                 MaxResultCount = args.Top ?? 10,
-                Filter = args.Filters.IsNullOrEmpty() ? null : args.Filters.First().FilterValue.ToString(),
+                Filter = _keyword,
                 Sorting = args.OrderBy
             });
 
