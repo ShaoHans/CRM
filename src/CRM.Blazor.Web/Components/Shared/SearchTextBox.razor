@@ -1,6 +1,6 @@
 ﻿<RadzenFormField Text="@PlaceHoder" Variant="Variant.Outlined">
     <ChildContent>
-        <RadzenTextBox @bind-Value="@KeyWord" @oninput="(e) => KeyWord = e.Value?.ToString()" @onkeydown="SearchAsync" />
+        <RadzenTextBox @bind-Value="@KeyWord" @oninput="HandleInput" @onkeydown="HandleKeyDown" />
     </ChildContent>
     <End>
         <RadzenIcon Icon="search" IconStyle="IconStyle.Secondary" />
@@ -12,17 +12,25 @@
     public string PlaceHoder { get; set; } = string.Empty;
 
     [Parameter]
+    public EventCallback<string> KeyWordChanged { get; set; }
+
+    [Parameter]
     public string? KeyWord { get; set; }
 
     [Parameter]
-    public EventCallback<KeyboardEventArgs>? OnEnterKeyPress { get; set; }
+    public Func<Task>? SearchAsync { get; set; }
 
-    async Task SearchAsync(KeyboardEventArgs args)
+    async Task HandleInput(ChangeEventArgs e)
     {
-        if (args.Key == "Enter" && OnEnterKeyPress is not null)
-        {
-            await OnEnterKeyPress.Value.InvokeAsync();
-        }        
+        KeyWord = e.Value?.ToString();
+        await KeyWordChanged.InvokeAsync(KeyWord); 
     }
 
+    async Task HandleKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter" && SearchAsync is not null)
+        {
+            await SearchAsync.Invoke();
+        }        
+    }
 }

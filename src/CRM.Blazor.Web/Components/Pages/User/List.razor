@@ -13,14 +13,7 @@
             <RadzenButton Icon="add" Text="添加用户" Click="OpenCreateUserDialog" />
         </RadzenStack>
         <RadzenStack Orientation="Orientation.Vertical" style="margin-left: auto;" Gap="4px">
-            <RadzenFormField Text="用户名/邮箱/手机号码" Variant="Variant.Outlined">
-                <ChildContent>
-                    <RadzenTextBox @bind-Value="@_keyword" @oninput="(e) => _keyword = e.Value?.ToString()" @onkeydown="SearchAsync" />
-                </ChildContent>
-                <End>
-                    <RadzenIcon Icon="search" IconStyle="IconStyle.Secondary" />
-                </End>
-            </RadzenFormField>
+            <SearchTextBox PlaceHoder="用户名/邮箱/手机号码" @bind-KeyWord="@_keyword" SearchAsync="@_grid.Reload" />
         </RadzenStack>
     </RadzenStack>
 </RadzenCard>
