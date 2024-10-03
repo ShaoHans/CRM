@@ -1,11 +1,13 @@
 ﻿@page "/Role/List"
 @using Volo.Abp.Identity
+@using Microsoft.IdentityModel.Tokens
 @inject DialogService DialogService
 @inject IIdentityRoleAppService RoleAppService
 @inject NotificationService NotificationService
 
 <PageTitle>角色列表</PageTitle>
-<RadzenDataGrid @ref="_grid" Data="@roles" AllowPaging="true" PagerHorizontalAlign="HorizontalAlign.Center" AllowSorting="true"
+<RadzenDataGrid @ref="_grid" Data="@roles" AllowPaging="true" AllowSorting="true" AllowFiltering="true"
+                PagerHorizontalAlign="HorizontalAlign.Center"
                 PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary"
                 LoadData="LoadRolesAsync" Count="@totalCount" IsLoading="@isLoading">
     <HeaderTemplate>
@@ -19,7 +21,7 @@
                 <RadzenBadge Text="公开" Visible="context.IsPublic" BadgeStyle="BadgeStyle.Info" />
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn Title="操作" Width="160px" Sortable="false">
+        <RadzenDataGridColumn Title="操作" Width="160px" Sortable="false" Filterable="false">
             <Template>
                 <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
                               Click="@(async () => await OpenEditRoleDialog(context))" />
@@ -57,7 +59,7 @@
             {
                 SkipCount = args.Skip ?? 0,
                 MaxResultCount = args.Top ?? 10,
-                Filter = args.Filter,
+                Filter = args.Filters.IsNullOrEmpty() ? null : args.Filters.First().FilterValue.ToString(),
                 Sorting = args.OrderBy
             });
 
