@@ -40,6 +40,11 @@ public partial class List
     {
         bool result = await DialogService.OpenAsync<Create>(
             "添加角色",
+            parameters:new Dictionary<string, object>
+            {
+                { "OnSubmit",Submit},
+                { "OnCancel",CloseDialog }
+            },
             options: new DialogOptions()
             {
                 Draggable = true,
@@ -51,6 +56,25 @@ public partial class List
         if (result)
         {
             await _grid.Reload();
+        }
+    }
+
+    void CloseDialog()
+    {
+        DialogService.Close(false);
+    }
+
+    async Task Submit(IdentityRoleCreateDto model)
+    {
+        try
+        {
+            await AppService.CreateAsync(model);
+            NotificationService.Success("保存成功");
+            DialogService.Close(true);
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Error(ex.Message);
         }
     }
 
