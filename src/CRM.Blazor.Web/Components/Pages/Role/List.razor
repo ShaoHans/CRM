@@ -4,16 +4,19 @@
 @using Microsoft.IdentityModel.Tokens
 @attribute [Authorize(IdentityPermissions.Roles.Default)]
 @inject DialogService DialogService
-@inject IIdentityRoleAppService RoleAppService
 @inject NotificationService NotificationService
+@inherits AbpCrudPageBase<IIdentityRoleAppService, IdentityRoleDto, Guid, GetIdentityRolesInput, IdentityRoleCreateDto, IdentityRoleUpdateDto>
 
 <PageTitle>角色列表</PageTitle>
 
 <RadzenCard class="rz-my-6">
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
-        <RadzenStack Orientation="Orientation.Vertical" Gap="4px">
-            <RadzenButton Icon="add" Text="添加角色" Click="OpenCreateRoleDialog" />
-        </RadzenStack>
+        @if (HasCreatePermission)
+        {
+            <RadzenStack Orientation="Orientation.Vertical" Gap="4px">
+                <RadzenButton Icon="add" Text="添加角色" Click="OpenCreateRoleDialog" />
+            </RadzenStack>
+        }
         <RadzenStack Orientation="Orientation.Vertical" style="margin-left: auto;" Gap="4px">
             <SearchTextBox PlaceHoder="角色名称" @bind-Keyword="@_keyword" SearchAsync="@_grid.Reload" />
         </RadzenStack>
@@ -34,11 +37,19 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Title="操作" Width="160px" Sortable="false">
             <Template>
-                <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
-                              Click="@(async () => await OpenEditRoleDialog(context))" />
-                <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning"
-                              Click="@(async () => await OpenAssignPermissionDialog(context))" />
-                @if (context.Name != "admin")
+                @if (HasUpdatePermission)
+                {
+                    <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
+                                  Click="@(async () => await OpenEditRoleDialog(context))" />
+                }
+
+                @if (HasManagePermissionsPermission)
+                {
+                    <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning"
+                                  Click="@(async () => await OpenAssignPermissionDialog(context))" />
+                }
+
+                @if (context.Name != "admin" && HasDeletePermission)
                 {
                     <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
                                   Click=@(async () => await ShowDeleteConfirmDialogAsync(context.Id)) />
@@ -48,103 +59,4 @@
     </Columns>
 </RadzenDataGrid>
 
-@code {
-    RadzenDataGrid<IdentityRoleDto> _grid = default!;
-    IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30 };
-    IEnumerable<IdentityRoleDto> roles = [];
-    bool showPagerSummary = true;
-    int totalCount = 0;
-    bool isLoading = true;
-    string? _keyword = null;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-        await LoadRolesAsync(new LoadDataArgs());
-    }
-
-    
-    private async Task LoadRolesAsync(LoadDataArgs args)
-    {
-        isLoading = true;
-        var result = await RoleAppService.GetListAsync(new GetIdentityRolesInput
-            {
-                SkipCount = args.Skip ?? 0,
-                MaxResultCount = args.Top ?? 10,
-                Filter = _keyword,
-                Sorting = args.OrderBy
-            });
-
-        roles = result.Items;
-        totalCount = (int)result.TotalCount;
-        isLoading = false;
-        StateHasChanged();
-    }
-
-    private async Task OpenCreateRoleDialog()
-    {
-        bool result = await DialogService.OpenAsync<Create>("添加角色",
-               options: new DialogOptions()
-                   {
-                       Draggable = true,
-                       Width = "600px",
-                       Height = "450px"
-                   });
-
-        if (result)
-        {
-            await _grid.Reload();
-        }
-    }
-
-    private async Task OpenEditRoleDialog(IdentityRoleDto role)
-    {
-        bool result = await DialogService.OpenAsync<Edit>("编辑角色",
-               new Dictionary<string, object>() { { "Role", role } },
-               options: new DialogOptions()
-                   {
-                       Draggable = true,
-                       Width = "600px",
-                       Height = "450px"
-                   });
-
-        if (result)
-        {
-            await _grid.Reload();
-        }
-    }
-
-    private async Task OpenAssignPermissionDialog(IdentityRoleDto role)
-    {
-        await DialogService.OpenAsync<Permission>($"分配权限 - {role.Name}",
-               parameters: new Dictionary<string, object>()
-                       { 
-                           { "ProviderName", "R" },
-                           { "ProviderKey", role.Name } 
-                       },
-               options: new DialogOptions()
-                   {
-                       Draggable = true,
-                       Width = "800px",
-                       Height = "700px"
-                   });
-    }
-
-    private async Task ShowDeleteConfirmDialogAsync(Guid roleId)
-    {
-        var result = await DialogService.Confirm("角色一旦删除将无法恢复，确认删除吗?", "删除角色",
-                new ConfirmOptions()
-                    {
-                        OkButtonText = "确定",
-                        CancelButtonText = "取消"
-                    });
-
-        if (result == true)
-        {
-            await RoleAppService.DeleteAsync(roleId);
-            await _grid.Reload();
-            NotificationService.Success("删除成功");
-        }
-    }
-
-}
