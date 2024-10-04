@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
+using Radzen;
+using Radzen.Blazor;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.AspNetCore.Components;
@@ -126,18 +128,19 @@ public abstract class AbpCrudPageBase<
     [Inject]
     public IAbpEnumLocalizer AbpEnumLocalizer { get; set; } = default!;
 
+    protected RadzenDataGrid<TListViewModel> _grid = default!;
+    protected readonly IEnumerable<int> _pageSizeOptions = [10, 20, 30];
+    protected readonly bool _showPagerSummary = true;
+    protected bool _isLoading = true;
+    protected string? _keyword = null;
     protected virtual int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
 
-    protected int CurrentPage = 1;
-    protected string CurrentSorting = default!;
-    protected int? TotalCount;
+    protected int TotalCount;
     protected TGetListInput GetListInput = new();
     protected IReadOnlyList<TListViewModel> Entities = [];
     protected TCreateViewModel NewEntity;
     protected TKey EditingEntityId = default!;
     protected TUpdateViewModel EditingEntity;
-    protected EntityActionDictionary EntityActions { get; set; }
-    protected TableColumnDictionary TableColumns { get; set; }
 
     protected string? CreatePolicyName { get; set; }
     protected string? UpdatePolicyName { get; set; }
@@ -151,26 +154,43 @@ public abstract class AbpCrudPageBase<
     {
         NewEntity = new TCreateViewModel();
         EditingEntity = new TUpdateViewModel();
-        TableColumns = [];
-        EntityActions = [];
     }
 
     protected override async Task OnInitializedAsync()
     {
         await TrySetPermissionsAsync();
-        await TrySetEntityActionsAsync();
-        await TrySetTableColumnsAsync();
-        await InvokeAsync(StateHasChanged);
+        await LoadDataAsync(new LoadDataArgs());
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected virtual async Task LoadDataAsync(LoadDataArgs args)
     {
-        if (firstRender)
+        _isLoading = true;
+        await UpdateGetListInputAsync(args);
+        var result = await AppService.GetListAsync(GetListInput);
+        Entities = MapToListViewModel(result.Items);
+        TotalCount = (int)result.TotalCount;
+        _isLoading = false;
+        StateHasChanged();
+    }
+
+    protected virtual Task UpdateGetListInputAsync(LoadDataArgs args)
+    {
+        if (GetListInput is ISortedResultRequest sortedResultRequestInput)
         {
-            await SetToolbarItemsAsync();
-            await SetBreadcrumbItemsAsync();
+            sortedResultRequestInput.Sorting = args.OrderBy;
         }
-        await base.OnAfterRenderAsync(firstRender);
+
+        if (GetListInput is IPagedResultRequest pagedResultRequestInput)
+        {
+            pagedResultRequestInput.SkipCount = args.Skip ?? 0;
+        }
+
+        if (GetListInput is ILimitedResultRequest limitedResultRequestInput)
+        {
+            limitedResultRequestInput.MaxResultCount = args.Top ?? 10;
+        }
+
+        return Task.CompletedTask;
     }
 
     private async Task TrySetPermissionsAsync()
@@ -201,21 +221,6 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task GetEntitiesAsync()
-    {
-        try
-        {
-            await UpdateGetListInputAsync();
-            var result = await AppService.GetListAsync(GetListInput);
-            Entities = MapToListViewModel(result.Items);
-            TotalCount = (int?)result.TotalCount;
-        }
-        catch (Exception ex)
-        {
-            await HandleErrorAsync(ex);
-        }
-    }
-
     private IReadOnlyList<TListViewModel> MapToListViewModel(IReadOnlyList<TGetListOutputDto> dtos)
     {
         if (typeof(TGetListOutputDto) == typeof(TListViewModel))
@@ -224,37 +229,6 @@ public abstract class AbpCrudPageBase<
         }
 
         return ObjectMapper.Map<IReadOnlyList<TGetListOutputDto>, List<TListViewModel>>(dtos);
-    }
-
-    protected virtual Task UpdateGetListInputAsync()
-    {
-        if (GetListInput is ISortedResultRequest sortedResultRequestInput)
-        {
-            sortedResultRequestInput.Sorting = CurrentSorting;
-        }
-
-        if (GetListInput is IPagedResultRequest pagedResultRequestInput)
-        {
-            pagedResultRequestInput.SkipCount = (CurrentPage - 1) * PageSize;
-        }
-
-        if (GetListInput is ILimitedResultRequest limitedResultRequestInput)
-        {
-            limitedResultRequestInput.MaxResultCount = PageSize;
-        }
-
-        return Task.CompletedTask;
-    }
-
-    protected virtual async Task SearchEntitiesAsync()
-    {
-        var currentPage = CurrentPage;
-        CurrentPage = 1;
-        if (currentPage == 1)
-        {
-            await GetEntitiesAsync();
-        }
-        await InvokeAsync(StateHasChanged);
     }
 
     protected virtual TUpdateViewModel MapToEditingEntity(TGetOutputDto entityDto)
@@ -317,45 +291,5 @@ public abstract class AbpCrudPageBase<
         }
 
         await AuthorizationService.CheckAsync(policyName);
-    }
-
-    protected virtual ValueTask SetBreadcrumbItemsAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
-
-    private async ValueTask TrySetEntityActionsAsync()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        await SetEntityActionsAsync();
-    }
-
-    protected virtual ValueTask SetEntityActionsAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
-
-    private async ValueTask TrySetTableColumnsAsync()
-    {
-        if (IsDisposed)
-        {
-            return;
-        }
-
-        await SetTableColumnsAsync();
-    }
-
-    protected virtual ValueTask SetTableColumnsAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
-
-    protected virtual ValueTask SetToolbarItemsAsync()
-    {
-        return ValueTask.CompletedTask;
     }
 }

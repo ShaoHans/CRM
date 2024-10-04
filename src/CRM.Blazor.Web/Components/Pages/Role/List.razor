@@ -23,10 +23,10 @@
     </RadzenStack>
 </RadzenCard>
 
-<RadzenDataGrid @ref="_grid" Data="@roles" AllowPaging="true" AllowSorting="true"
+<RadzenDataGrid @ref="_grid" Data="@Entities" AllowPaging="true" AllowSorting="true"
                 PagerHorizontalAlign="HorizontalAlign.Center"
-                PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary"
-                LoadData="LoadRolesAsync" Count="@totalCount" IsLoading="@isLoading">
+                PageSizeOptions="@_pageSizeOptions" ShowPagingSummary="@_showPagerSummary"
+                LoadData="LoadDataAsync" Count="@TotalCount" IsLoading="@_isLoading">
     <Columns>
         <RadzenDataGridColumn Title="角色名称" Property="@nameof(IdentityRoleDto.Name)">
             <Template>
