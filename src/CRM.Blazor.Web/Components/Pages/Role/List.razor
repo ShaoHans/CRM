@@ -38,7 +38,7 @@
                 @if (HasUpdatePermission)
                 {
                     <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
-                                  Click="@(async () => await OpenEditRoleDialog(context))" />
+                                  Click="@(async () => await OpenEditDialogAsync<Edit>("编辑角色",context))" />
                 }
 
                 @if (HasManagePermissionsPermission)

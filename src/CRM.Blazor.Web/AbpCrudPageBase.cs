@@ -279,6 +279,55 @@ public abstract class AbpCrudPageBase<
         }
     }
 
+    protected virtual async Task OpenEditDialogAsync<TDialog>(string title, TGetListOutputDto dto) where TDialog : ComponentBase
+    {
+        var dialogFromOption = new DialogFromOption<TUpdateInput>
+        {
+            OkSubmitText = "保存",
+            CancelButtonText = "取消",
+            OnSubmit = UpdateRoleAsync,
+            OnCancel = CloseDialog,
+            Model = await SetEditDialogModelAsync(dto)
+        };
+
+        EditingEntityId = dto.Id;
+        bool result = await DialogService.OpenAsync<TDialog>(
+            title: title,
+            parameters: new Dictionary<string, object>()
+            {
+                { "DialogFromOption", dialogFromOption}
+            },
+            options: new DialogOptions()
+            {
+                Draggable = true,
+                Width = "600px",
+                Height = "450px"
+            }
+        );
+
+        if (result)
+        {
+            await _grid.Reload();
+        }
+    }
+
+    protected abstract Task<TUpdateInput> SetEditDialogModelAsync(TGetListOutputDto dto);
+
+    async Task UpdateRoleAsync(TUpdateInput model)
+    {
+
+        try
+        {
+            await AppService.UpdateAsync(EditingEntityId, model);
+            NotificationService.Success("保存成功");
+            DialogService.Close(true);
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Error(ex.Message);
+        }
+    }
+
     private IReadOnlyList<TListViewModel> MapToListViewModel(IReadOnlyList<TGetListOutputDto> dtos)
     {
         if (typeof(TGetListOutputDto) == typeof(TListViewModel))

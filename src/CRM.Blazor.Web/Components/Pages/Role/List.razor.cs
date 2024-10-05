@@ -1,7 +1,7 @@
 using CRM.Blazor.Web.Models;
-
 using Microsoft.AspNetCore.Authorization;
 using Radzen;
+using StackExchange.Redis;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.Localization;
 
@@ -38,58 +38,16 @@ public partial class List
         await base.UpdateGetListInputAsync(args);
     }
 
-    
-
-    private async Task OpenEditRoleDialog(IdentityRoleDto role)
+    protected override Task<IdentityRoleUpdateDto> SetEditDialogModelAsync(IdentityRoleDto dto)
     {
-        var dialogFromOption = new DialogFromOption<IdentityRoleUpdateDto>
-        {
-            OkSubmitText = "保存",
-            CancelButtonText = "取消",
-            OnSubmit = UpdateRoleAsync,
-            OnCancel = CloseDialog,
-            Model = new IdentityRoleUpdateDto
+        return Task.FromResult(
+            new IdentityRoleUpdateDto
             {
-                Name = role.Name,
-                IsDefault = role.IsDefault,
-                IsPublic = role.IsPublic
-            }
-        };
-
-        EditingEntityId = role.Id;
-        bool result = await DialogService.OpenAsync<Edit>(
-            title: "编辑角色",
-            parameters: new Dictionary<string, object>() 
-            {
-                { "DialogFromOption", dialogFromOption}
-            },
-            options: new DialogOptions()
-            {
-                Draggable = true,
-                Width = "600px",
-                Height = "450px"
+                Name = dto.Name,
+                IsDefault = dto.IsDefault,
+                IsPublic = dto.IsPublic
             }
         );
-
-        if (result)
-        {
-            await _grid.Reload();
-        }
-    }
-
-    async Task UpdateRoleAsync(IdentityRoleUpdateDto model)
-    {
-
-        try
-        {
-            await AppService.UpdateAsync(EditingEntityId, model);
-            NotificationService.Success("保存成功");
-            DialogService.Close(true);
-        }
-        catch (Exception ex)
-        {
-            NotificationService.Error(ex.Message);
-        }
     }
 
     private async Task OpenAssignPermissionDialog(IdentityRoleDto role)
