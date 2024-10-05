@@ -3,27 +3,28 @@
 @using Volo.Abp.Identity
 @using Volo.Abp.Users
 @attribute [Authorize(IdentityPermissions.Users.Default)]
-@inject DialogService DialogService
-@inject NotificationService NotificationService
-@inject IIdentityUserAppService UserAppService
+@inherits AbpCrudPageBase<IIdentityUserAppService, IdentityUserDto, Guid, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto>
 
 <PageTitle>用户列表</PageTitle>
 
 <RadzenCard class="rz-my-6">
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
-        <RadzenStack Orientation="Orientation.Vertical" Gap="4px">
-            <RadzenButton Icon="add" Text="添加用户" Click="OpenCreateUserDialog" />
-        </RadzenStack>
+        @if(HasCreatePermission)
+        {
+            <RadzenStack Orientation="Orientation.Vertical" Gap="4px">
+                <RadzenButton Icon="add" Text="添加用户" Click="@(async()=>{await OpenCreateDialogAsync<Create>("添加用户", SetDialogOptions);})" />
+            </RadzenStack>
+        }
         <RadzenStack Orientation="Orientation.Vertical" style="margin-left: auto;" Gap="4px">
             <SearchTextBox PlaceHoder="用户名/邮箱/手机号码" @bind-Keyword="@_keyword" SearchAsync="@_grid.Reload" />
         </RadzenStack>
     </RadzenStack>
 </RadzenCard>
 
-<RadzenDataGrid @ref="_grid" Data="@users" AllowPaging="true" AllowSorting="true"
+<RadzenDataGrid @ref="_grid" Data="@_entities" AllowPaging="true" AllowSorting="true"
                 PagerHorizontalAlign="HorizontalAlign.Center"
-                PageSizeOptions="@pageSizeOptions" ShowPagingSummary="@showPagerSummary" LoadData="LoadUsersAsync"
-                Count="@totalCount" IsLoading="@isLoading">    
+                PageSizeOptions="@_pageSizeOptions" ShowPagingSummary="@_showPagerSummary" LoadData="LoadDataAsync"
+                Count="@_totalCount" IsLoading="@_isLoading">    
     <Columns>
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Id)" Title="ID" Width="80px" Visible="false" />
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.UserName)" Title="用户名" Width="160px" />
@@ -45,126 +46,23 @@
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.CreationTime)" Filterable="false" Title="添加时间" Width="160px" />
         <RadzenDataGridColumn Title="操作" Width="160px" Filterable="false" Sortable="false">
             <Template>
-                <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
-                              Click="@(async () => await OpenEditUserDialog(context))" />
-                <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning"
-                              Click="@(async () => await OpenAssignPermissionDialog(context))" />
-                @if (context.UserName != "admin")
+                @if (HasUpdatePermission)
+                {
+                    <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
+                                  Click="@(async () => await OpenEditDialogAsync<Edit>("编辑用户", context, SetDialogOptions))" />
+                }
+                @if (HasManagePermissionsPermission)
+                {
+                    <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning"
+                                  Click="@(async () => await OpenAssignPermissionDialog(context))" />
+                }
+                @if (context.UserName != "admin" && HasDeletePermission)
                 {
                     <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
-                                  Click=@(async () => await ShowDeleteConfirmDialogAsync(context.Id)) />
+                                  Click=@(async () => await OpenDeleteConfirmDialogAsync("删除用户", context.Id)) />
                 }
             </Template>
         </RadzenDataGridColumn>
     </Columns>
 </RadzenDataGrid>
-
-@code {
-    RadzenDataGrid<IdentityUserDto> _grid = default!;
-    IEnumerable<int> pageSizeOptions = new int[] { 10, 20, 30 };
-    IEnumerable<IdentityUserDto> users = [];
-    bool showPagerSummary = true;
-    int totalCount = 0;
-    bool isLoading = true;
-    string? _keyword = null;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        await LoadUsersAsync(new LoadDataArgs());
-    }
-
-    async Task LoadUsersAsync(LoadDataArgs args)
-    {
-        isLoading = true;
-        var result = await UserAppService.GetListAsync(new GetIdentityUsersInput
-            {
-                SkipCount = args.Skip ?? 0,
-                MaxResultCount = args.Top ?? 10,
-                Filter = _keyword,
-                Sorting = args.OrderBy
-            });
-
-        users = result.Items;
-        totalCount = (int)result.TotalCount;
-        isLoading = false;
-        StateHasChanged();
-    }
-
-    async Task OpenCreateUserDialog()
-    {
-        bool result = await DialogService.OpenAsync<Create>("添加用户",
-               options: new DialogOptions()
-                   {
-                       Draggable = true,
-                       Width = "600px",
-                       Height = "740px"
-                   });
-
-        if (result)
-        {
-            await _grid.Reload();
-        }
-    }
-
-    async Task OpenEditUserDialog(IdentityUserDto user)
-    {
-        bool result = await DialogService.OpenAsync<Edit>("编辑用户",
-               new Dictionary<string, object>() { { "User", user } },
-               options: new DialogOptions()
-                   {
-                       Draggable = true,
-                       Width = "600px",
-                       Height = "740px",
-                   });
-
-        if (result)
-        {
-            await _grid.Reload();
-        }
-    }
-
-    async Task OpenAssignPermissionDialog(IdentityUserDto user)
-    {
-        await DialogService.OpenAsync<Role.Permission>($"分配权限 - {user.UserName}",
-               parameters: new Dictionary<string, object>()
-                           {
-                               { "ProviderName", "U" },
-                               { "ProviderKey", user.Id.ToString() }
-                           },
-               options: new DialogOptions()
-                   {
-                       Draggable = true,
-                       Width = "800px",
-                       Height = "700px"
-                   });
-    }
-
-    async Task ShowDeleteConfirmDialogAsync(Guid userId)
-    {
-        var result = await DialogService.Confirm("用户一旦删除将无法恢复，确认删除吗?", "删除用户", 
-                new ConfirmOptions() 
-                { 
-                    OkButtonText = "确定", 
-                    CancelButtonText = "取消" 
-                });
-
-        if (result == true)
-        {
-            await UserAppService.DeleteAsync(userId);
-            await _grid.Reload();
-            NotificationService.Success("删除成功");
-        }
-    }
-
-    async Task SearchAsync(KeyboardEventArgs args)
-    {
-        if (args.Key == "Enter")
-        {
-            await _grid.Reload();
-        }
-    }
-}
-
     

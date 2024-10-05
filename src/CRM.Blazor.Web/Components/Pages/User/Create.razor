@@ -1,8 +1,7 @@
 ﻿@using Volo.Abp.Identity
-@inject NotificationService NotificationService
-@inject DialogService DialogService
+@inject IIdentityUserAppService UserAppService
 
-<RadzenTemplateForm TItem="IdentityUserCreateDto" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+<RadzenTemplateForm TItem="IdentityUserCreateDto" Data=@DialogFromOption.Model Submit=@DialogFromOption.OnSubmit >
     <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
@@ -10,7 +9,7 @@
                 <RadzenLabel Text="用户名" Component="UserName" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenTextBox Name="UserName" @bind-Value=@model.UserName Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxUserNameLength" />
+                <RadzenTextBox Name="UserName" @bind-Value=@DialogFromOption.Model.UserName Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxUserNameLength" />
                 <RadzenRequiredValidator Component="UserName" Text="UserName is required"  Style="position: absolute" />
             </RadzenColumn>
         </RadzenRow>
@@ -20,7 +19,7 @@
                 <RadzenLabel Text="密码" Component="Password" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenPassword Name="Password" @bind-Value=@model.Password Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxPasswordLength" />
+                <RadzenPassword Name="Password" @bind-Value=@DialogFromOption.Model.Password Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxPasswordLength" />
                 <RadzenRequiredValidator Component="Password" Text="Password is required" Style="position: absolute" />
             </RadzenColumn>
         </RadzenRow>
@@ -30,7 +29,7 @@
                 <RadzenLabel Text="邮箱" Component="Email" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenTextBox Name="Email" @bind-Value=@model.Email Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxEmailLength" />
+                <RadzenTextBox Name="Email" @bind-Value=@DialogFromOption.Model.Email Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxEmailLength" />
                 <RadzenRequiredValidator Component="Email" Text="Email is required" Style="position: absolute" />
                 <RadzenEmailValidator Component="Email" Text="Provide a valid email address" Style="position: absolute" />
             </RadzenColumn>
@@ -40,7 +39,7 @@
                 <RadzenLabel Text="手机号码" Component="PhoneNumber" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenTextBox Name="PhoneNumber" @bind-Value=@model.PhoneNumber Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxPhoneNumberLength" />
+                <RadzenTextBox Name="PhoneNumber" @bind-Value=@DialogFromOption.Model.PhoneNumber Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxPhoneNumberLength" />
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
@@ -48,7 +47,7 @@
                 <RadzenLabel Text="启用" Component="IsActive" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenCheckBox TValue="bool" @bind-Value=@model.IsActive Name="IsActive"  />
+                <RadzenCheckBox TValue="bool" @bind-Value=@DialogFromOption.Model.IsActive Name="IsActive"  />
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
@@ -56,7 +55,7 @@
                 <RadzenLabel Text="账户锁定" Component="LockoutEnabled" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenCheckBox TValue="bool" @bind-Value=@model.LockoutEnabled Name="LockoutEnabled"  />
+                <RadzenCheckBox TValue="bool" @bind-Value=@DialogFromOption.Model.LockoutEnabled Name="LockoutEnabled"  />
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
@@ -72,18 +71,14 @@
     <div class="dialog-footer">
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
             <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="保存"></RadzenButton>
-            <RadzenButton Icon="cancel" Click="()=>DialogService.Close(false)" Text="取消" ButtonStyle="ButtonStyle.Light" />
+            <RadzenButton Icon="cancel" Click="DialogFromOption.OnCancel" Text="取消" ButtonStyle="ButtonStyle.Light" />
         </RadzenStack>
     </div>
 </RadzenTemplateForm>
 
 @code {
-    [Inject]
-    IIdentityUserAppService UserAppService { get; set; } = default!;
-    [Inject]
-    NavigationManager NavigationManager { get; set; } = default!;
-
-    IdentityUserCreateDto model = new() { IsActive = true, LockoutEnabled = true, RoleNames = [] };
+    [Parameter]
+    public DialogFromOption<IdentityUserCreateDto> DialogFromOption { get; set; } = default!;
 
     IList<string> roleNames = [];
 
@@ -98,24 +93,6 @@
 
     void RolesChange(IEnumerable<string> values)
     {
-        model.RoleNames = values is null ? [] : values.ToArray();
-    }
-
-    async Task OnSubmit(IdentityUserCreateDto model)
-    {
-        try
-        {
-            await UserAppService.CreateAsync(model);
-            NotificationService.Success("保存成功");
-            DialogService.Close(true);
-        }
-        catch (Exception ex)
-        {
-            NotificationService.Error(ex.Message);
-        }
-    }
-
-    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
-    {
+        DialogFromOption.Model.RoleNames = values is null ? [] : values.ToArray();
     }
 }

@@ -225,7 +225,7 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task OpenCreateDialogAsync<TDialog>(string title)
+    protected virtual async Task OpenCreateDialogAsync<TDialog>(string title, Func<DialogOptions>? func = null)
         where TDialog : ComponentBase
     {
         var dialogFromOption = new DialogFromOption<TCreateInput>
@@ -233,7 +233,8 @@ public abstract class AbpCrudPageBase<
             OkSubmitText = "保存",
             CancelButtonText = "取消",
             OnSubmit = CreateEntityAsync,
-            OnCancel = CloseDialog
+            OnCancel = CloseDialog,
+            Model = await SetCreateDialogModelAsync()
         };
 
         bool result = await DialogService.OpenAsync<TDialog>(
@@ -242,7 +243,7 @@ public abstract class AbpCrudPageBase<
             {
                 { "DialogFromOption", dialogFromOption },
             },
-            options: new DialogOptions()
+            options: func is not null ? func() : new DialogOptions()
             {
                 Draggable = true,
                 Width = "600px",
@@ -254,6 +255,11 @@ public abstract class AbpCrudPageBase<
         {
             await _grid.Reload();
         }
+    }
+
+    protected virtual Task<TCreateInput> SetCreateDialogModelAsync()
+    {
+        return Task.FromResult(new TCreateInput());
     }
 
     protected virtual void CloseDialog()
@@ -275,7 +281,7 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task OpenEditDialogAsync<TDialog>(string title, TGetListOutputDto dto)
+    protected virtual async Task OpenEditDialogAsync<TDialog>(string title, TGetListOutputDto dto, Func<DialogOptions>? func = null)
         where TDialog : ComponentBase
     {
         var dialogFromOption = new DialogFromOption<TUpdateInput>
@@ -294,7 +300,7 @@ public abstract class AbpCrudPageBase<
             {
                 { "DialogFromOption", dialogFromOption }
             },
-            options: new DialogOptions()
+            options: func is not null ? func() : new DialogOptions()
             {
                 Draggable = true,
                 Width = "600px",

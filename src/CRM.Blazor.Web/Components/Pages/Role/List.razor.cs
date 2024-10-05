@@ -1,7 +1,5 @@
-using CRM.Blazor.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Radzen;
-using StackExchange.Redis;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.Localization;
 
@@ -67,6 +65,4 @@ public partial class List
             }
         );
     }
-
-    
 }
