@@ -1,6 +1,6 @@
 ﻿@using Volo.Abp.Identity
 
-<RadzenTemplateForm TItem="IdentityRoleUpdateDto" Data=@model Submit=@DialogFromOption.OnSubmit InvalidSubmit=@OnInvalidSubmit>
+<RadzenTemplateForm TItem="IdentityRoleUpdateDto" Data=@DialogFromOption.Model Submit=@DialogFromOption.OnSubmit>
     <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
@@ -8,7 +8,7 @@
                 <RadzenLabel Text="角色名称" Component="Name" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenTextBox Name="Name" @bind-Value=@model.Name Style="display: block; width: 100%;" MaxLength="IdentityRoleConsts.MaxNameLength" />
+                <RadzenTextBox Name="Name" @bind-Value=@DialogFromOption.Model.Name Style="display: block; width: 100%;" MaxLength="IdentityRoleConsts.MaxNameLength" />
                 <RadzenRequiredValidator Component="Name" Text="RoleName is required" Style="position: absolute" />
             </RadzenColumn>
         </RadzenRow>
@@ -17,7 +17,7 @@
                 <RadzenLabel Text="默认" Component="IsDefault" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenCheckBox TValue="bool" @bind-Value=@model.IsDefault Name="IsDefault" />
+                <RadzenCheckBox TValue="bool" @bind-Value=@DialogFromOption.Model.IsDefault Name="IsDefault" />
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
@@ -25,7 +25,7 @@
                 <RadzenLabel Text="公开" Component="IsPublic" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenCheckBox TValue="bool" @bind-Value=@model.IsPublic Name="IsPublic" />
+                <RadzenCheckBox TValue="bool" @bind-Value=@DialogFromOption.Model.IsPublic Name="IsPublic" />
             </RadzenColumn>
         </RadzenRow>
     </RadzenStack>
@@ -40,25 +40,4 @@
 @code {
     [Parameter]
     public DialogFromOption<IdentityRoleUpdateDto> DialogFromOption { get; set; } = default!;
-
-    [Parameter]
-    public IdentityRoleDto Role { get; set; } = new();
-
-    IdentityRoleUpdateDto model = new();
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-
-        model = new IdentityRoleUpdateDto
-            {
-                Name = Role.Name,
-                IsDefault = Role.IsDefault,
-                IsPublic = Role.IsPublic
-            };
-    }
-
-    void OnInvalidSubmit(FormInvalidSubmitEventArgs args)
-    {
-    }
 }

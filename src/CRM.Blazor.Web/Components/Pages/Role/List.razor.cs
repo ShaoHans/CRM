@@ -94,7 +94,13 @@ public partial class List
             OkSubmitText = "保存",
             CancelButtonText = "取消",
             OnSubmit = UpdateRoleAsync,
-            OnCancel = CloseDialog
+            OnCancel = CloseDialog,
+            Model = new IdentityRoleUpdateDto
+            {
+                Name = role.Name,
+                IsDefault = role.IsDefault,
+                IsPublic = role.IsPublic
+            }
         };
 
         EditingEntityId = role.Id;
@@ -102,8 +108,7 @@ public partial class List
             title: "编辑角色",
             parameters: new Dictionary<string, object>() 
             {
-                { "DialogFromOption", dialogFromOption},
-                { "Role", role } 
+                { "DialogFromOption", dialogFromOption}
             },
             options: new DialogOptions()
             {

@@ -1,7 +1,9 @@
 ﻿namespace CRM.Blazor.Web.Models;
 
-public class DialogFromOption<TCreateOrUpdateInput> where TCreateOrUpdateInput : class
+public class DialogFromOption<TCreateOrUpdateInput> where TCreateOrUpdateInput : class, new()
 {
+    public TCreateOrUpdateInput Model { get; set; } = new();
+
     public string OkSubmitText { get; set; } = default!;
 
     public string CancelButtonText { get; set; } = default!;
