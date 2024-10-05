@@ -348,7 +348,7 @@ public abstract class AbpCrudPageBase<
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "保存实体对象出现异常");
+            Logger.LogError(ex, "更新实体对象出现异常");
             NotificationService.Error(L["InternalServerErrorMessage"]);
         }
     }
