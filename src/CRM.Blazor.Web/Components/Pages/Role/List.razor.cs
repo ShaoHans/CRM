@@ -38,54 +38,7 @@ public partial class List
         await base.UpdateGetListInputAsync(args);
     }
 
-    private async Task OpenCreateRoleDialog()
-    {
-        var dialogFromOption = new DialogFromOption<IdentityRoleCreateDto>
-        {
-            OkSubmitText = "保存",
-            CancelButtonText = "取消",
-            OnSubmit = CreateRoleAsync,
-            OnCancel = CloseDialog
-        };
-
-        bool result = await DialogService.OpenAsync<Create>(
-            title: "添加角色",
-            parameters:new Dictionary<string, object>
-            {
-                { "DialogFromOption", dialogFromOption},
-            },
-            options: new DialogOptions()
-            {
-                Draggable = true,
-                Width = "600px",
-                Height = "450px"
-            }
-        );
-
-        if (result)
-        {
-            await _grid.Reload();
-        }
-    }
-
-    void CloseDialog()
-    {
-        DialogService.Close(false);
-    }
-
-    async Task CreateRoleAsync(IdentityRoleCreateDto model)
-    {
-        try
-        {
-            await AppService.CreateAsync(model);
-            NotificationService.Success("保存成功");
-            DialogService.Close(true);
-        }
-        catch (Exception ex)
-        {
-            NotificationService.Error(ex.Message);
-        }
-    }
+    
 
     private async Task OpenEditRoleDialog(IdentityRoleDto role)
     {

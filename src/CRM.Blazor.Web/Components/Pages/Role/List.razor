@@ -3,8 +3,6 @@
 @using Volo.Abp.Identity
 @using Microsoft.IdentityModel.Tokens
 @attribute [Authorize(IdentityPermissions.Roles.Default)]
-@inject DialogService DialogService
-@inject NotificationService NotificationService
 @inherits AbpCrudPageBase<IIdentityRoleAppService, IdentityRoleDto, Guid, GetIdentityRolesInput, IdentityRoleCreateDto, IdentityRoleUpdateDto>
 
 <PageTitle>角色列表</PageTitle>
@@ -14,7 +12,7 @@
         @if (HasCreatePermission)
         {
             <RadzenStack Orientation="Orientation.Vertical" Gap="4px">
-                <RadzenButton Icon="add" Text="添加角色" Click="OpenCreateRoleDialog" />
+                <RadzenButton Icon="add" Text="添加角色" Click="@(async()=>await OpenCreateDialogAsync<Create>("添加角色"))" />
             </RadzenStack>
         }
         <RadzenStack Orientation="Orientation.Vertical" style="margin-left: auto;" Gap="4px">

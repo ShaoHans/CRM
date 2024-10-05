@@ -1,4 +1,6 @@
-﻿using Localization.Resources.AbpUi;
+﻿using CRM.Blazor.Web.Models;
+
+using Localization.Resources.AbpUi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
@@ -10,6 +12,7 @@ using Volo.Abp.AspNetCore.Components;
 using Volo.Abp.AspNetCore.Components.Web.Extensibility.EntityActions;
 using Volo.Abp.AspNetCore.Components.Web.Extensibility.TableColumns;
 using Volo.Abp.Authorization;
+using Volo.Abp.Identity;
 using Volo.Abp.Localization;
 
 namespace CRM.Blazor.Web;
@@ -112,13 +115,19 @@ public abstract class AbpCrudPageBase<
         >
     where TGetOutputDto : IEntityDto<TKey>
     where TGetListOutputDto : IEntityDto<TKey>
-    where TCreateInput : class
-    where TUpdateInput : class
+    where TCreateInput : class, new()
+    where TUpdateInput : class, new()
     where TGetListInput : new()
     where TListViewModel : IEntityDto<TKey>
     where TCreateViewModel : class, new()
     where TUpdateViewModel : class, new()
 {
+    [Inject]
+    protected DialogService DialogService { get; set; } = default!;
+
+    [Inject]
+    protected NotificationService NotificationService { get; set; } = default!;
+
     [Inject]
     protected TAppService AppService { get; set; } = default!;
 
@@ -218,6 +227,55 @@ public abstract class AbpCrudPageBase<
         if (DeletePolicyName != null)
         {
             HasDeletePermission = await AuthorizationService.IsGrantedAsync(DeletePolicyName);
+        }
+    }
+
+    protected virtual async Task OpenCreateDialogAsync<TDialog>(string title) where TDialog : ComponentBase
+    {
+        var dialogFromOption = new DialogFromOption<TCreateInput>
+        {
+            OkSubmitText = "保存",
+            CancelButtonText = "取消",
+            OnSubmit = CreateEntityAsync,
+            OnCancel = CloseDialog
+        };
+
+        bool result = await DialogService.OpenAsync<TDialog>(
+            title: title,
+            parameters: new Dictionary<string, object>
+            {
+                { "DialogFromOption", dialogFromOption},
+            },
+            options: new DialogOptions()
+            {
+                Draggable = true,
+                Width = "600px",
+                Height = "450px"
+            }
+        );
+
+        if (result)
+        {
+            await _grid.Reload();
+        }
+    }
+
+    protected virtual void CloseDialog()
+    {
+        DialogService.Close(false);
+    }
+
+    async Task CreateEntityAsync(TCreateInput model)
+    {
+        try
+        {
+            await AppService.CreateAsync(model);
+            NotificationService.Success("保存成功");
+            DialogService.Close(true);
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Error(ex.Message);
         }
     }
 
