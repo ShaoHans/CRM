@@ -1,5 +1,8 @@
-﻿@using Volo.Abp.Identity
+﻿@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Components
+@using Volo.Abp.Identity
 @inject IIdentityUserAppService UserAppService
+@inherits AbpComponentBase
 
 <RadzenTemplateForm TItem="IdentityUserCreateDto" Data=@DialogFromOption.Model Submit=@DialogFromOption.OnSubmit >
     <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
@@ -58,15 +61,18 @@
                 <RadzenCheckBox TValue="bool" @bind-Value=@DialogFromOption.Model.LockoutEnabled Name="LockoutEnabled"  />
             </RadzenColumn>
         </RadzenRow>
-        <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
-            <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
-                <RadzenLabel Text="角色" Component="RoleNames" />
-            </RadzenColumn>
-            <RadzenColumn Size="12" SizeMD="8">
-                <RadzenDropDown TValue="IEnumerable<string>" Data=@roleNames Name="RoleNames" ValueChanged="RolesChange"
-                                Multiple=true AllowClear=true Placeholder="分配角色" Chips=true Style="width: 100%;" />
-            </RadzenColumn>
-        </RadzenRow>
+        @if (HasManagePermissionsPermission)
+        {
+            <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+                <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                    <RadzenLabel Text="角色" Component="RoleNames" />
+                </RadzenColumn>
+                <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenDropDown TValue="IEnumerable<string>" Data=@roleNames Name="RoleNames" ValueChanged="RolesChange"
+                                    Multiple=true AllowClear=true Placeholder="分配角色" Chips=true Style="width: 100%;" />
+                </RadzenColumn>
+            </RadzenRow>
+        }
     </RadzenStack>
     <div class="dialog-footer">
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
@@ -79,12 +85,17 @@
 @code {
     [Parameter]
     public DialogFromOption<IdentityUserCreateDto> DialogFromOption { get; set; } = default!;
+    protected bool HasManagePermissionsPermission { get; set; }
 
     IList<string> roleNames = [];
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        HasManagePermissionsPermission = await AuthorizationService.IsGrantedAsync(
+            IdentityPermissions.Users.ManagePermissions
+        );
 
         roleNames = (await UserAppService.GetAssignableRolesAsync())
             .Items?.Select(r => r.Name).ToArray()
