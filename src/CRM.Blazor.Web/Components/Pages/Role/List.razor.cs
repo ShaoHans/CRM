@@ -1,3 +1,5 @@
+using CRM.Blazor.Web.Models;
+
 using Microsoft.AspNetCore.Authorization;
 using Radzen;
 using Volo.Abp.Identity;
@@ -38,12 +40,19 @@ public partial class List
 
     private async Task OpenCreateRoleDialog()
     {
+        var dialogFromOption = new DialogFromOption<IdentityRoleCreateDto>
+        {
+            OkSubmitText = "保存",
+            CancelButtonText = "取消",
+            OnSubmit = CreateRoleAsync,
+            OnCancel = CloseDialog
+        };
+
         bool result = await DialogService.OpenAsync<Create>(
-            "添加角色",
+            title: "添加角色",
             parameters:new Dictionary<string, object>
             {
-                { "OnSubmit",Submit},
-                { "OnCancel",CloseDialog }
+                { "DialogFromOption", dialogFromOption},
             },
             options: new DialogOptions()
             {
@@ -64,7 +73,7 @@ public partial class List
         DialogService.Close(false);
     }
 
-    async Task Submit(IdentityRoleCreateDto model)
+    async Task CreateRoleAsync(IdentityRoleCreateDto model)
     {
         try
         {
@@ -80,9 +89,22 @@ public partial class List
 
     private async Task OpenEditRoleDialog(IdentityRoleDto role)
     {
+        var dialogFromOption = new DialogFromOption<IdentityRoleUpdateDto>
+        {
+            OkSubmitText = "保存",
+            CancelButtonText = "取消",
+            OnSubmit = UpdateRoleAsync,
+            OnCancel = CloseDialog
+        };
+
+        EditingEntityId = role.Id;
         bool result = await DialogService.OpenAsync<Edit>(
-            "编辑角色",
-            new Dictionary<string, object>() { { "Role", role } },
+            title: "编辑角色",
+            parameters: new Dictionary<string, object>() 
+            {
+                { "DialogFromOption", dialogFromOption},
+                { "Role", role } 
+            },
             options: new DialogOptions()
             {
                 Draggable = true,
@@ -94,6 +116,21 @@ public partial class List
         if (result)
         {
             await _grid.Reload();
+        }
+    }
+
+    async Task UpdateRoleAsync(IdentityRoleUpdateDto model)
+    {
+
+        try
+        {
+            await AppService.UpdateAsync(EditingEntityId, model);
+            NotificationService.Success("保存成功");
+            DialogService.Close(true);
+        }
+        catch (Exception ex)
+        {
+            NotificationService.Error(ex.Message);
         }
     }
 

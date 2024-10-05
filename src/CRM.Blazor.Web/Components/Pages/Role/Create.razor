@@ -1,6 +1,6 @@
 ﻿@using Volo.Abp.Identity
 
-<RadzenTemplateForm TItem="IdentityRoleCreateDto" Data=@model Submit=@OnSubmit InvalidSubmit=@OnInvalidSubmit>
+<RadzenTemplateForm TItem="IdentityRoleCreateDto" Data=@model Submit=@DialogFromOption.OnSubmit InvalidSubmit=@OnInvalidSubmit>
     <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
@@ -32,17 +32,14 @@
     <div class="dialog-footer">
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
             <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="保存"></RadzenButton>
-            <RadzenButton Icon="cancel" Click="OnCancel" Text="取消" ButtonStyle="ButtonStyle.Light" />
+            <RadzenButton Icon="cancel" Click="DialogFromOption.OnCancel" Text="取消" ButtonStyle="ButtonStyle.Light" />
         </RadzenStack>
     </div>
 </RadzenTemplateForm>
 
 @code {
     [Parameter]
-    public Func<IdentityRoleCreateDto, Task> OnSubmit { get; set; } = default!;
-
-    [Parameter]
-    public Action OnCancel { get; set; } = default!;
+    public DialogFromOption<IdentityRoleCreateDto> DialogFromOption { get; set; } = default!;
 
     IdentityRoleCreateDto model = new();
 
