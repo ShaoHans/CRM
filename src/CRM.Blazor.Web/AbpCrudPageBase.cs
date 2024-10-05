@@ -5,10 +5,13 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Radzen;
 using Radzen.Blazor;
+
+using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.AspNetCore.Components;
 using Volo.Abp.Authorization;
+using Volo.Abp.Identity;
 using Volo.Abp.Localization;
 
 namespace CRM.Blazor.Web;
@@ -275,9 +278,19 @@ public abstract class AbpCrudPageBase<
             NotificationService.Success("保存成功");
             DialogService.Close(true);
         }
+        catch(AbpIdentityResultException ex)
+        {
+            using var scope = ScopedServices.CreateScope();
+            NotificationService.Error(ex.LocalizeMessage(new LocalizationContext(scope.ServiceProvider)));
+        }
+        catch(BusinessException ex)
+        {
+            NotificationService.Error(L[ex.Code!]);
+        }
         catch (Exception ex)
         {
-            NotificationService.Error(ex.Message);
+            Logger.LogError(ex, "保存实体对象出现异常");
+            NotificationService.Error(L["InternalServerErrorMessage"]);
         }
     }
 
@@ -324,9 +337,19 @@ public abstract class AbpCrudPageBase<
             NotificationService.Success("保存成功");
             DialogService.Close(true);
         }
+        catch (AbpIdentityResultException ex)
+        {
+            using var scope = ScopedServices.CreateScope();
+            NotificationService.Error(ex.LocalizeMessage(new LocalizationContext(scope.ServiceProvider)));
+        }
+        catch (BusinessException ex)
+        {
+            NotificationService.Error(L[ex.Code!]);
+        }
         catch (Exception ex)
         {
-            NotificationService.Error(ex.Message);
+            Logger.LogError(ex, "保存实体对象出现异常");
+            NotificationService.Error(L["InternalServerErrorMessage"]);
         }
     }
 
