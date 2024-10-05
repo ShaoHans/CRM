@@ -1,5 +1,4 @@
 ﻿using CRM.Blazor.Web.Models;
-
 using Localization.Resources.AbpUi;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
@@ -9,10 +8,7 @@ using Radzen.Blazor;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.AspNetCore.Components;
-using Volo.Abp.AspNetCore.Components.Web.Extensibility.EntityActions;
-using Volo.Abp.AspNetCore.Components.Web.Extensibility.TableColumns;
 using Volo.Abp.Authorization;
-using Volo.Abp.Identity;
 using Volo.Abp.Localization;
 
 namespace CRM.Blazor.Web;
@@ -138,15 +134,14 @@ public abstract class AbpCrudPageBase<
     public IAbpEnumLocalizer AbpEnumLocalizer { get; set; } = default!;
 
     protected RadzenDataGrid<TListViewModel> _grid = default!;
+    protected IReadOnlyList<TListViewModel> _entities = [];
+    protected int _totalCount;
     protected readonly IEnumerable<int> _pageSizeOptions = [10, 20, 30];
     protected readonly bool _showPagerSummary = true;
     protected bool _isLoading = true;
     protected string? _keyword = null;
-    protected virtual int PageSize { get; } = LimitedResultRequestDto.DefaultMaxResultCount;
 
-    protected int TotalCount;
     protected TGetListInput GetListInput = new();
-    protected IReadOnlyList<TListViewModel> Entities = [];
     protected TCreateViewModel NewEntity;
     protected TKey EditingEntityId = default!;
     protected TUpdateViewModel EditingEntity;
@@ -176,8 +171,8 @@ public abstract class AbpCrudPageBase<
         _isLoading = true;
         await UpdateGetListInputAsync(args);
         var result = await AppService.GetListAsync(GetListInput);
-        Entities = MapToListViewModel(result.Items);
-        TotalCount = (int)result.TotalCount;
+        _entities = MapToListViewModel(result.Items);
+        _totalCount = (int)result.TotalCount;
         _isLoading = false;
         StateHasChanged();
     }
@@ -230,7 +225,8 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task OpenCreateDialogAsync<TDialog>(string title) where TDialog : ComponentBase
+    protected virtual async Task OpenCreateDialogAsync<TDialog>(string title)
+        where TDialog : ComponentBase
     {
         var dialogFromOption = new DialogFromOption<TCreateInput>
         {
@@ -244,7 +240,7 @@ public abstract class AbpCrudPageBase<
             title: title,
             parameters: new Dictionary<string, object>
             {
-                { "DialogFromOption", dialogFromOption},
+                { "DialogFromOption", dialogFromOption },
             },
             options: new DialogOptions()
             {
@@ -279,7 +275,8 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task OpenEditDialogAsync<TDialog>(string title, TGetListOutputDto dto) where TDialog : ComponentBase
+    protected virtual async Task OpenEditDialogAsync<TDialog>(string title, TGetListOutputDto dto)
+        where TDialog : ComponentBase
     {
         var dialogFromOption = new DialogFromOption<TUpdateInput>
         {
@@ -295,7 +292,7 @@ public abstract class AbpCrudPageBase<
             title: title,
             parameters: new Dictionary<string, object>()
             {
-                { "DialogFromOption", dialogFromOption}
+                { "DialogFromOption", dialogFromOption }
             },
             options: new DialogOptions()
             {
@@ -315,7 +312,6 @@ public abstract class AbpCrudPageBase<
 
     protected virtual async Task UpdateEntityAsync(TUpdateInput model)
     {
-
         try
         {
             await AppService.UpdateAsync(EditingEntityId, model);

@@ -1,7 +1,6 @@
 ﻿@page "/Role/List"
 @using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.Identity
-@using Microsoft.IdentityModel.Tokens
 @attribute [Authorize(IdentityPermissions.Roles.Default)]
 @inherits AbpCrudPageBase<IIdentityRoleAppService, IdentityRoleDto, Guid, GetIdentityRolesInput, IdentityRoleCreateDto, IdentityRoleUpdateDto>
 
@@ -21,10 +20,10 @@
     </RadzenStack>
 </RadzenCard>
 
-<RadzenDataGrid @ref="_grid" Data="@Entities" AllowPaging="true" AllowSorting="true"
+<RadzenDataGrid @ref="_grid" Data="@_entities" AllowPaging="true" AllowSorting="true"
                 PagerHorizontalAlign="HorizontalAlign.Center"
                 PageSizeOptions="@_pageSizeOptions" ShowPagingSummary="@_showPagerSummary"
-                LoadData="LoadDataAsync" Count="@TotalCount" IsLoading="@_isLoading">
+                LoadData="LoadDataAsync" Count="@_totalCount" IsLoading="@_isLoading">
     <Columns>
         <RadzenDataGridColumn Title="角色名称" Property="@nameof(IdentityRoleDto.Name)">
             <Template>
