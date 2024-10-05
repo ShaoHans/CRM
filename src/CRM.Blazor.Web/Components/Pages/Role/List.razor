@@ -38,7 +38,7 @@
                 @if (HasUpdatePermission)
                 {
                     <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
-                                  Click="@(async () => await OpenEditDialogAsync<Edit>("编辑角色",context))" />
+                                  Click="@(async () => await OpenEditDialogAsync<Edit>("编辑角色", context))" />
                 }
 
                 @if (HasManagePermissionsPermission)
@@ -50,7 +50,7 @@
                 @if (context.Name != "admin" && HasDeletePermission)
                 {
                     <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
-                                  Click=@(async () => await ShowDeleteConfirmDialogAsync(context.Id)) />
+                                  Click=@(async () => await OpenDeleteConfirmDialogAsync("删除角色", context.Id)) />
                 }
             </Template>
         </RadzenDataGridColumn>

@@ -265,7 +265,7 @@ public abstract class AbpCrudPageBase<
         DialogService.Close(false);
     }
 
-    async Task CreateEntityAsync(TCreateInput model)
+    protected virtual async Task CreateEntityAsync(TCreateInput model)
     {
         try
         {
@@ -285,7 +285,7 @@ public abstract class AbpCrudPageBase<
         {
             OkSubmitText = "保存",
             CancelButtonText = "取消",
-            OnSubmit = UpdateRoleAsync,
+            OnSubmit = UpdateEntityAsync,
             OnCancel = CloseDialog,
             Model = await SetEditDialogModelAsync(dto)
         };
@@ -313,7 +313,7 @@ public abstract class AbpCrudPageBase<
 
     protected abstract Task<TUpdateInput> SetEditDialogModelAsync(TGetListOutputDto dto);
 
-    async Task UpdateRoleAsync(TUpdateInput model)
+    protected virtual async Task UpdateEntityAsync(TUpdateInput model)
     {
 
         try
@@ -325,6 +325,22 @@ public abstract class AbpCrudPageBase<
         catch (Exception ex)
         {
             NotificationService.Error(ex.Message);
+        }
+    }
+
+    protected virtual async Task OpenDeleteConfirmDialogAsync(string title, TKey id)
+    {
+        var result = await DialogService.Confirm(
+            "一旦删除将无法恢复，确认删除吗?",
+            title,
+            new ConfirmOptions() { OkButtonText = "确定", CancelButtonText = "取消" }
+        );
+
+        if (result == true)
+        {
+            await AppService.DeleteAsync(id);
+            await _grid.Reload();
+            NotificationService.Success("删除成功");
         }
     }
 

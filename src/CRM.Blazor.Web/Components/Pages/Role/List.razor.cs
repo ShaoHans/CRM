@@ -68,19 +68,5 @@ public partial class List
         );
     }
 
-    private async Task ShowDeleteConfirmDialogAsync(Guid roleId)
-    {
-        var result = await DialogService.Confirm(
-            "角色一旦删除将无法恢复，确认删除吗?",
-            "删除角色",
-            new ConfirmOptions() { OkButtonText = "确定", CancelButtonText = "取消" }
-        );
-
-        if (result == true)
-        {
-            await AppService.DeleteAsync(roleId);
-            await _grid.Reload();
-            NotificationService.Success("删除成功");
-        }
-    }
+    
 }
