@@ -82,14 +82,21 @@
             NotificationService.Error(L["NewPasswordSameAsOld"]);
             return;
         }
-        
-        await ProfileAppService.ChangePasswordAsync(new ChangePasswordInput
-            {
-                CurrentPassword = ChangePasswordModel.CurrentPassword,
-                NewPassword = ChangePasswordModel.NewPassword
-            });
 
-        ChangePasswordModel.Clear();
-        NotificationService.Success(L["PasswordChanged"]);
+        try
+        {
+            await ProfileAppService.ChangePasswordAsync(new ChangePasswordInput
+                {
+                    CurrentPassword = ChangePasswordModel.CurrentPassword,
+                    NewPassword = ChangePasswordModel.NewPassword
+                });
+
+            ChangePasswordModel.Clear();
+            NotificationService.Success(L["PasswordChanged"]);
+        }
+        catch (Exception ex)
+        {
+            await HandleErrorAsync(ex);
+        }
     }
 }

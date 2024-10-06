@@ -11,7 +11,9 @@ using OpenIddict.Validation.AspNetCore;
 using Radzen;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Authentication.JwtBearer;
+using Volo.Abp.AspNetCore.Components.Messages;
 using Volo.Abp.AspNetCore.Components.Server.Configuration;
+using Volo.Abp.AspNetCore.Components.Web;
 using Volo.Abp.AspNetCore.Components.Web.Configuration;
 using Volo.Abp.AspNetCore.MultiTenancy;
 using Volo.Abp.AspNetCore.Mvc;
@@ -54,7 +56,8 @@ namespace CRM.Blazor;
     typeof(AbpIdentityEntityFrameworkCoreModule),
     typeof(AbpIdentityAspNetCoreModule),
     typeof(AbpAspNetCoreSerilogModule),
-    typeof(AbpSwashbuckleModule)
+    typeof(AbpSwashbuckleModule),
+    typeof(AbpAspNetCoreComponentsWebModule)
 )]
 public class CRMBlazorWebModule : AbpModule
 {
@@ -147,6 +150,9 @@ public class CRMBlazorWebModule : AbpModule
                 ICurrentApplicationConfigurationCacheResetService,
                 BlazorServerCurrentApplicationConfigurationCacheResetService
             >()
+        );
+        context.Services.Replace(
+            ServiceDescriptor.Transient<IUiMessageService, RadzenUiMessageService>()
         );
     }
 

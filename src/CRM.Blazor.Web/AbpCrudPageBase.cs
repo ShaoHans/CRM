@@ -276,19 +276,9 @@ public abstract class AbpCrudPageBase<
             NotificationService.Success(L["SuccessfullySaved"]);
             DialogService.Close(true);
         }
-        catch(AbpIdentityResultException ex)
-        {
-            using var scope = ScopedServices.CreateScope();
-            NotificationService.Error(ex.LocalizeMessage(new LocalizationContext(scope.ServiceProvider)));
-        }
-        catch(BusinessException ex)
-        {
-            NotificationService.Error(L[ex.Code!]);
-        }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "保存实体对象出现异常");
-            NotificationService.Error(L["InternalServerErrorMessage"]);
+            await HandleErrorAsync(ex);
         }
     }
 
@@ -333,19 +323,9 @@ public abstract class AbpCrudPageBase<
             NotificationService.Success(L["SuccessfullySaved"]);
             DialogService.Close(true);
         }
-        catch (AbpIdentityResultException ex)
-        {
-            using var scope = ScopedServices.CreateScope();
-            NotificationService.Error(ex.LocalizeMessage(new LocalizationContext(scope.ServiceProvider)));
-        }
-        catch (BusinessException ex)
-        {
-            NotificationService.Error(L[ex.Code!]);
-        }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "更新实体对象出现异常");
-            NotificationService.Error(L["InternalServerErrorMessage"]);
+            await HandleErrorAsync(ex);
         }
     }
 
