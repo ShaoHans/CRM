@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.AspNetCore.Components
 @using Volo.Abp.Identity
+@using Volo.Abp.Identity.Localization
 @inject IIdentityUserAppService UserAppService
 @inherits AbpComponentBase
 
@@ -9,37 +10,37 @@
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
                 <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
-                <RadzenLabel Text="用户名" Component="UserName" />
+                <RadzenLabel Text="@L["DisplayName:UserName"]" Component="UserName" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenTextBox Name="UserName" @bind-Value=@DialogFromOption.Model.UserName Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxUserNameLength" />
-                <RadzenRequiredValidator Component="UserName" Text="UserName is required"  Style="position: absolute" />
+                <RadzenRequiredValidator Component="UserName" Text="@L.Required("DisplayName:UserName")" Style="position: absolute" />
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
                 <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
-                <RadzenLabel Text="密码" Component="Password" />
+                <RadzenLabel Text="@L["DisplayName:Password"]" Component="Password" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenPassword Name="Password" @bind-Value=@DialogFromOption.Model.Password Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxPasswordLength" />
-                <RadzenRequiredValidator Component="Password" Text="Password is required" Style="position: absolute" />
+                <RadzenRequiredValidator Component="Password" Text="@L.Required("DisplayName:Password")" Style="position: absolute" />
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
                 <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
-                <RadzenLabel Text="邮箱" Component="Email" />
+                <RadzenLabel Text="@L["DisplayName:Email"]" Component="Email" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenTextBox Name="Email" @bind-Value=@DialogFromOption.Model.Email Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxEmailLength" />
-                <RadzenRequiredValidator Component="Email" Text="Email is required" Style="position: absolute" />
-                <RadzenEmailValidator Component="Email" Text="Provide a valid email address" Style="position: absolute" />
+                <RadzenRequiredValidator Component="Email" Text="@L.Required("DisplayName:Email")" Style="position: absolute" />
+                <RadzenEmailValidator Component="Email" Text="@L["Volo.Abp.Identity:InvalidEmail",DialogFromOption.Model.Email]" Style="position: absolute" />
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
-                <RadzenLabel Text="手机号码" Component="PhoneNumber" />
+                <RadzenLabel Text="@L["DisplayName:PhoneNumber"]" Component="PhoneNumber" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenTextBox Name="PhoneNumber" @bind-Value=@DialogFromOption.Model.PhoneNumber Style="display: block; width: 100%;" MaxLength="IdentityUserConsts.MaxPhoneNumberLength" />
@@ -47,7 +48,7 @@
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
-                <RadzenLabel Text="启用" Component="IsActive" />
+                <RadzenLabel Text="@L["DisplayName:IsActive"]" Component="IsActive" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenCheckBox TValue="bool" @bind-Value=@DialogFromOption.Model.IsActive Name="IsActive"  />
@@ -55,7 +56,7 @@
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
-                <RadzenLabel Text="账户锁定" Component="LockoutEnabled" />
+                <RadzenLabel Text="@L["DisplayName:LockoutEnabled"]" Component="LockoutEnabled" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenCheckBox TValue="bool" @bind-Value=@DialogFromOption.Model.LockoutEnabled Name="LockoutEnabled"  />
@@ -65,7 +66,7 @@
         {
             <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
                 <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
-                    <RadzenLabel Text="角色" Component="RoleNames" />
+                    <RadzenLabel Text="@L["Roles"]" Component="RoleNames" />
                 </RadzenColumn>
                 <RadzenColumn Size="12" SizeMD="8">
                     <RadzenDropDown TValue="IEnumerable<string>" Data=@roleNames Name="RoleNames" ValueChanged="RolesChange"
@@ -76,8 +77,8 @@
     </RadzenStack>
     <div class="dialog-footer">
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
-            <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="保存"></RadzenButton>
-            <RadzenButton Icon="cancel" Click="DialogFromOption.OnCancel" Text="取消" ButtonStyle="ButtonStyle.Light" />
+            <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="@L["Save"]"></RadzenButton>
+            <RadzenButton Icon="cancel" Click="DialogFromOption.OnCancel" Text="@L["Cancel"]" ButtonStyle="ButtonStyle.Light" />
         </RadzenStack>
     </div>
 </RadzenTemplateForm>
@@ -88,6 +89,11 @@
     protected bool HasManagePermissionsPermission { get; set; }
 
     IList<string> roleNames = [];
+
+    public Create()
+    {
+        LocalizationResource = typeof(IdentityResource);
+    }
 
     protected override async Task OnInitializedAsync()
     {
