@@ -233,8 +233,6 @@ public abstract class AbpCrudPageBase<
     {
         var dialogFromOption = new DialogFromOption<TCreateInput>
         {
-            OkSubmitText = "保存",
-            CancelButtonText = "取消",
             OnSubmit = CreateEntityAsync,
             OnCancel = CloseDialog,
             Model = await SetCreateDialogModelAsync()
@@ -275,7 +273,7 @@ public abstract class AbpCrudPageBase<
         try
         {
             await AppService.CreateAsync(model);
-            NotificationService.Success("保存成功");
+            NotificationService.Success(L["SuccessfullyDeleted"]);
             DialogService.Close(true);
         }
         catch(AbpIdentityResultException ex)
@@ -299,8 +297,6 @@ public abstract class AbpCrudPageBase<
     {
         var dialogFromOption = new DialogFromOption<TUpdateInput>
         {
-            OkSubmitText = "保存",
-            CancelButtonText = "取消",
             OnSubmit = UpdateEntityAsync,
             OnCancel = CloseDialog,
             Model = await SetEditDialogModelAsync(dto)
@@ -334,7 +330,7 @@ public abstract class AbpCrudPageBase<
         try
         {
             await AppService.UpdateAsync(EditingEntityId, model);
-            NotificationService.Success("保存成功");
+            NotificationService.Success(L["SuccessfullyDeleted"]);
             DialogService.Close(true);
         }
         catch (AbpIdentityResultException ex)
@@ -353,19 +349,19 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task OpenDeleteConfirmDialogAsync(string title, TKey id)
+    protected virtual async Task OpenDeleteConfirmDialogAsync(TKey id, string title="Confirm",string confirm="Confirm?")
     {
         var result = await DialogService.Confirm(
-            "一旦删除将无法恢复，确认删除吗?",
+            confirm,
             title,
-            new ConfirmOptions() { OkButtonText = "确定", CancelButtonText = "取消" }
+            new ConfirmOptions() { OkButtonText = L["Yes"], CancelButtonText = L["Cancel"] }
         );
 
         if (result == true)
         {
             await AppService.DeleteAsync(id);
             await _grid.Reload();
-            NotificationService.Success("删除成功");
+            NotificationService.Success(L["SuccessfullyDeleted"]);
         }
     }
 

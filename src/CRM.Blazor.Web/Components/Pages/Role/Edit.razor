@@ -1,20 +1,23 @@
-﻿@using Volo.Abp.Identity
+﻿@using Volo.Abp.AspNetCore.Components
+@using Volo.Abp.Identity
+@using Volo.Abp.Identity.Localization
+@inherits AbpComponentBase
 
 <RadzenTemplateForm TItem="IdentityRoleUpdateDto" Data=@DialogFromOption.Model Submit=@DialogFromOption.OnSubmit>
     <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
                 <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
-                <RadzenLabel Text="角色名称" Component="Name" />
+                <RadzenLabel Text="@L["DisplayName:RoleName"]" Component="Name" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
-                <RadzenTextBox Name="Name" @bind-Value=@DialogFromOption.Model.Name Style="display: block; width: 100%;" MaxLength="IdentityRoleConsts.MaxNameLength" />
-                <RadzenRequiredValidator Component="Name" Text="RoleName is required" Style="position: absolute" />
+                <RadzenTextBox Name="Name" @bind-Value=@DialogFromOption.Model.Name MaxLength="IdentityRoleConsts.MaxNameLength" />
+                <RadzenRequiredValidator Component="Name" Text="@L.Required("DisplayName:RoleName")" Style="position: absolute" />
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
-                <RadzenLabel Text="默认" Component="IsDefault" />
+                <RadzenLabel Text="@L["DisplayName:IsDefault"]" Component="IsDefault" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenCheckBox TValue="bool" @bind-Value=@DialogFromOption.Model.IsDefault Name="IsDefault" />
@@ -22,7 +25,7 @@
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
             <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
-                <RadzenLabel Text="公开" Component="IsPublic" />
+                <RadzenLabel Text="@L["DisplayName:IsPublic"]" Component="IsPublic" />
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenCheckBox TValue="bool" @bind-Value=@DialogFromOption.Model.IsPublic Name="IsPublic" />
@@ -31,8 +34,8 @@
     </RadzenStack>
     <div class="dialog-footer">
         <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
-            <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="保存"></RadzenButton>
-            <RadzenButton Icon="cancel" Click="@DialogFromOption.OnCancel" Text="取消" ButtonStyle="ButtonStyle.Light" />
+            <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="@L["Save"]"></RadzenButton>
+            <RadzenButton Icon="cancel" Click="@DialogFromOption.OnCancel" Text="@L["Cancel"]" ButtonStyle="ButtonStyle.Light" />
         </RadzenStack>
     </div>
 </RadzenTemplateForm>
@@ -40,4 +43,9 @@
 @code {
     [Parameter]
     public DialogFromOption<IdentityRoleUpdateDto> DialogFromOption { get; set; } = default!;
+
+    public Edit()
+    {
+        LocalizationResource = typeof(IdentityResource);
+    }
 }

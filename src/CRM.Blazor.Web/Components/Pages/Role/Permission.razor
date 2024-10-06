@@ -1,10 +1,11 @@
-﻿@using Volo.Abp.AspNetCore.Components.Web.Configuration
+﻿@using Volo.Abp.AspNetCore.Components
+@using Volo.Abp.AspNetCore.Components.Web.Configuration
 @using Volo.Abp.PermissionManagement
 @inject IPermissionAppService PermissionAppService
 @inject ICurrentApplicationConfigurationCacheResetService CacheResetService
 @inject NotificationService NotificationService
 @inject DialogService DialogService
-
+@inherits AbpComponentBase
 
 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start">
     <RadzenCheckBox TValue="bool" Name="GrantAll" Disabled="_selectAllDisabled" Value="@(_groups.All(x=>x.GrantAll))" ValueChanged="GrantAll" />
@@ -211,7 +212,7 @@
 
             if (!updateDto.Permissions.Any(x => x.IsGranted))
             {
-                var result = await DialogService.Confirm("您确定要在没有任何权限的情况下保存吗？", "保存权限", 
+                var result = await DialogService.Confirm(L["SaveWithoutAnyPermissionsWarningMessage"], "保存权限",
                     new ConfirmOptions()
                         {
                             OkButtonText = "确定",

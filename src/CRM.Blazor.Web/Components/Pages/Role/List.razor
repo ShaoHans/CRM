@@ -11,11 +11,11 @@
         @if (HasCreatePermission)
         {
             <RadzenStack Orientation="Orientation.Vertical" Gap="4px">
-                <RadzenButton Icon="add" Text="添加角色" Click="@(async()=>await OpenCreateDialogAsync<Create>("添加角色"))" />
+                <RadzenButton Icon="add" Text="@L["NewRole"]" Click="@(async()=>await OpenCreateDialogAsync<Create>(@L["NewRole"]))" />
             </RadzenStack>
         }
         <RadzenStack Orientation="Orientation.Vertical" style="margin-left: auto;" Gap="4px">
-            <SearchTextBox PlaceHoder="角色名称" @bind-Keyword="@_keyword" SearchAsync="@_grid.Reload" />
+            <SearchTextBox PlaceHoder="@L["DisplayName:RoleName"]" @bind-Keyword="@_keyword" SearchAsync="@_grid.Reload" />
         </RadzenStack>
     </RadzenStack>
 </RadzenCard>
@@ -25,31 +25,31 @@
                 PageSizeOptions="@_pageSizeOptions" ShowPagingSummary="@_showPagerSummary"
                 LoadData="LoadDataAsync" Count="@_totalCount" IsLoading="@_isLoading">
     <Columns>
-        <RadzenDataGridColumn Title="角色名称" Property="@nameof(IdentityRoleDto.Name)">
+        <RadzenDataGridColumn Title="@L["DisplayName:RoleName"]" Property="@nameof(IdentityRoleDto.Name)">
             <Template>
                 <RadzenLabel Text="@context.Name" />
-                <RadzenBadge Text="默认" Visible="context.IsDefault" BadgeStyle="BadgeStyle.Success" />
-                <RadzenBadge Text="公开" Visible="context.IsPublic" BadgeStyle="BadgeStyle.Info" />
+                <RadzenBadge Text="@L["DisplayName:IsDefault"]" Visible="context.IsDefault" BadgeStyle="BadgeStyle.Success" />
+                <RadzenBadge Text="@L["DisplayName:IsPublic"]" Visible="context.IsPublic" BadgeStyle="BadgeStyle.Info" />
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn Title="操作" Width="160px" Sortable="false">
+        <RadzenDataGridColumn Title="@L["Actions"]" Width="160px" Sortable="false">
             <Template>
                 @if (HasUpdatePermission)
                 {
-                    <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
-                                  Click="@(async () => await OpenEditDialogAsync<Edit>("编辑角色", context))" />
+                    <RadzenButton Icon="edit" title="@L["Edit"]" ButtonStyle="ButtonStyle.Success"
+                                  Click="@(async () => await OpenEditDialogAsync<Edit>(@L["Edit"], context))" />
                 }
 
                 @if (HasManagePermissionsPermission)
                 {
-                    <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning"
+                    <RadzenButton Icon="productivity" title="@L["Permissions"]" ButtonStyle="ButtonStyle.Warning"
                                   Click="@(async () => await OpenAssignPermissionDialog(context))" />
                 }
 
                 @if (context.Name != "admin" && HasDeletePermission)
                 {
-                    <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
-                                  Click=@(async () => await OpenDeleteConfirmDialogAsync("删除角色", context.Id)) />
+                    <RadzenButton Icon="delete" title="@L["Delete"]" ButtonStyle="ButtonStyle.Danger"
+                                  Click=@(async () => await OpenDeleteConfirmDialogAsync(context.Id, L["Delete"], L["RoleDeletionConfirmationMessage",context.Name])) />
                 }
             </Template>
         </RadzenDataGridColumn>

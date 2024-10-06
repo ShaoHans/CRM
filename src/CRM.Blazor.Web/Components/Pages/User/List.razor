@@ -59,7 +59,7 @@
                 @if (context.UserName != "admin" && HasDeletePermission)
                 {
                     <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
-                                  Click=@(async () => await OpenDeleteConfirmDialogAsync("删除用户", context.Id)) />
+                                  Click=@(async () => await OpenDeleteConfirmDialogAsync(context.Id, L["Delete"], L["UserDeletionConfirmationMessage",context.UserName])) />
                 }
             </Template>
         </RadzenDataGridColumn>
