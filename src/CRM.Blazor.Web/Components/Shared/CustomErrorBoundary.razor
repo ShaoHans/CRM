@@ -1,8 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.Extensions.Localization
+@using Volo.Abp
+@using Volo.Abp.Identity
+@using Volo.Abp.Localization
 @inherits ErrorBoundary
 @inject ILogger<CustomErrorBoundary> Logger
 @inject NotificationService NotificationService
 @inject NavigationManager NavigationManager
+@inject IStringLocalizer<CustomErrorBoundary> L
+@inject IServiceProvider ScopedServices
 
 @if (CurrentException is null)
 {
@@ -32,7 +38,21 @@ else if (ErrorContent is not null)
             }
             else
             {
-                NotificationService.Error("Access Denied！");
+                switch (ex)
+                {
+                    case AbpIdentityResultException identityResultException:
+                        {
+                            using var scope = ScopedServices.CreateScope();
+                            NotificationService.Error(identityResultException.LocalizeMessage(new LocalizationContext(scope.ServiceProvider)));
+                        }
+                        break;
+                    case BusinessException businessException:
+                        NotificationService.Error(L[businessException.Code!]);
+                        break;
+                    default:
+                        NotificationService.Error(ex.Message);
+                        break;
+                }
             }
         }
         else

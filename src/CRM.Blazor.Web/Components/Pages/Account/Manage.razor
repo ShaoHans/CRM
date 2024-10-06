@@ -10,40 +10,40 @@
 <RadzenTabs TabPosition="TabPosition.Left" RenderMode="TabRenderMode.Client">
     <Tabs>
         <RadzenTabsItem Text="@L["ProfileTab:Password"]">
-            <RadzenTemplateForm TItem="ChangePasswordModel" Data=@ChangePasswordModel Submit=@ChangePasswordAsync>
-                <RadzenStack Gap="2rem" class="rz-p-4 rz-p-md-12">
-                    <RadzenRow AlignItems="AlignItems.Start" RowGap="0.25rem">
-                        <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+            <RadzenTemplateForm TItem="ChangePasswordModel" Data=@ChangePasswordModel Submit="ChangePasswordAsync">
+                <RadzenStack Gap="2rem" >
+                    <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+                        <RadzenColumn Size="12" SizeMD="2" class="rz-text-align-start rz-text-align-md-end">
                             <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
                             <RadzenLabel Text="@L["DisplayName:CurrentPassword"]" Component="@nameof(ChangePasswordModel.CurrentPassword)" />
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextBox Name="@nameof(ChangePasswordModel.CurrentPassword)" @bind-Value=@ChangePasswordModel.CurrentPassword MaxLength="IdentityUserConsts.MaxPasswordLength" />
+                            <RadzenPassword Name="@nameof(ChangePasswordModel.CurrentPassword)" @bind-Value=@ChangePasswordModel.CurrentPassword MaxLength="IdentityUserConsts.MaxPasswordLength" />
                             <RadzenRequiredValidator Component="@nameof(ChangePasswordModel.CurrentPassword)" Text="@L.Required("DisplayName:CurrentPassword")" Style="position: absolute" />
                         </RadzenColumn>
                     </RadzenRow>
-                    <RadzenRow AlignItems="AlignItems.Start" RowGap="0.25rem">
-                        <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                    <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+                        <RadzenColumn Size="12" SizeMD="2" class="rz-text-align-start rz-text-align-md-end">
                             <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
                             <RadzenLabel Text="@L["DisplayName:NewPassword"]" Component="@nameof(ChangePasswordModel.NewPassword)" />
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextBox Name="@nameof(ChangePasswordModel.NewPassword)" @bind-Value=@ChangePasswordModel.NewPassword MaxLength="IdentityUserConsts.MaxPasswordLength" />
+                            <RadzenPassword Name="@nameof(ChangePasswordModel.NewPassword)" @bind-Value=@ChangePasswordModel.NewPassword MaxLength="IdentityUserConsts.MaxPasswordLength" />
                             <RadzenRequiredValidator Component="@nameof(ChangePasswordModel.NewPassword)" Text="@L.Required("DisplayName:NewPassword")" Style="position: absolute" />
                         </RadzenColumn>
                     </RadzenRow>
-                    <RadzenRow AlignItems="AlignItems.Start" RowGap="0.25rem">
-                        <RadzenColumn Size="12" SizeMD="4" class="rz-text-align-start rz-text-align-md-end">
+                    <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+                        <RadzenColumn Size="12" SizeMD="2" class="rz-text-align-start rz-text-align-md-end">
                             <RadzenBadge Text="*" BadgeStyle="BadgeStyle.Danger" />
                             <RadzenLabel Text="@L["DisplayName:NewPasswordConfirm"]" Component="@nameof(ChangePasswordModel.NewPasswordConfirm)" />
                         </RadzenColumn>
                         <RadzenColumn Size="12" SizeMD="8">
-                            <RadzenTextBox Name="@nameof(ChangePasswordModel.NewPasswordConfirm)" @bind-Value=@ChangePasswordModel.NewPasswordConfirm MaxLength="IdentityUserConsts.MaxPasswordLength" />
+                            <RadzenPassword Name="@nameof(ChangePasswordModel.NewPasswordConfirm)" @bind-Value=@ChangePasswordModel.NewPasswordConfirm MaxLength="IdentityUserConsts.MaxPasswordLength" />
                             <RadzenRequiredValidator Component="@nameof(ChangePasswordModel.NewPasswordConfirm)" Text="@L.Required("DisplayName:NewPasswordConfirm")" Style="position: absolute" />
                         </RadzenColumn>
                     </RadzenRow>
-                    <RadzenRow AlignItems="AlignItems.Start" RowGap="0.25rem">
-                        <RadzenColumn Size="12" SizeMD="8">
+                    <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
+                        <RadzenColumn Size="12" SizeMD="2" class="rz-text-align-start rz-text-align-md-end">
                             <RadzenButton ButtonType="ButtonType.Submit" Icon="save" Text="@L["Save"]"></RadzenButton>
                         </RadzenColumn>
                     </RadzenRow>
@@ -82,13 +82,14 @@
             NotificationService.Error(L["NewPasswordSameAsOld"]);
             return;
         }
-
+        
         await ProfileAppService.ChangePasswordAsync(new ChangePasswordInput
             {
                 CurrentPassword = ChangePasswordModel.CurrentPassword,
                 NewPassword = ChangePasswordModel.NewPassword
             });
 
+        ChangePasswordModel.Clear();
         NotificationService.Success(L["PasswordChanged"]);
     }
 }
