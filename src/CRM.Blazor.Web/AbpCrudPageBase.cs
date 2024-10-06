@@ -273,7 +273,7 @@ public abstract class AbpCrudPageBase<
         try
         {
             await AppService.CreateAsync(model);
-            NotificationService.Success(L["SuccessfullyDeleted"]);
+            NotificationService.Success(L["SuccessfullySaved"]);
             DialogService.Close(true);
         }
         catch(AbpIdentityResultException ex)
@@ -330,7 +330,7 @@ public abstract class AbpCrudPageBase<
         try
         {
             await AppService.UpdateAsync(EditingEntityId, model);
-            NotificationService.Success(L["SuccessfullyDeleted"]);
+            NotificationService.Success(L["SuccessfullySaved"]);
             DialogService.Close(true);
         }
         catch (AbpIdentityResultException ex)
@@ -349,12 +349,12 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task OpenDeleteConfirmDialogAsync(TKey id, string title="Confirm",string confirm="Confirm?")
+    protected virtual async Task OpenDeleteConfirmDialogAsync(TKey id, string title = "Confirm", string confirm = "Confirm?")
     {
         var result = await DialogService.Confirm(
-            confirm,
-            title,
-            new ConfirmOptions() { OkButtonText = L["Yes"], CancelButtonText = L["Cancel"] }
+            message: confirm,
+            title: title,
+            options: new ConfirmOptions() { OkButtonText = L["Yes"], CancelButtonText = L["Cancel"] }
         );
 
         if (result == true)

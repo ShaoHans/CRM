@@ -5,18 +5,19 @@
 @attribute [Authorize(IdentityPermissions.Users.Default)]
 @inherits AbpCrudPageBase<IIdentityUserAppService, IdentityUserDto, Guid, GetIdentityUsersInput, IdentityUserCreateDto, IdentityUserUpdateDto>
 
-<PageTitle>用户列表</PageTitle>
+<PageTitle>@L["Users"]</PageTitle>
 
 <RadzenCard class="rz-my-6">
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
-        @if(HasCreatePermission)
+        @if (HasCreatePermission)
         {
             <RadzenStack Orientation="Orientation.Vertical" Gap="4px">
-                <RadzenButton Icon="add" Text="添加用户" Click="@(async()=>{await OpenCreateDialogAsync<Create>("添加用户", SetDialogOptions);})" />
+                <RadzenButton Icon="add" Text="@L["NewUser"]" Click="@(async()=>{await OpenCreateDialogAsync<Create>(L["NewUser"], SetDialogOptions);})" />
             </RadzenStack>
         }
         <RadzenStack Orientation="Orientation.Vertical" style="margin-left: auto;" Gap="4px">
-            <SearchTextBox PlaceHoder="用户名/邮箱/手机号码" @bind-Keyword="@_keyword" SearchAsync="@_grid.Reload" />
+            <SearchTextBox PlaceHoder="@($"{L["DisplayName:UserName"]}/{L["DisplayName:Email"]}/{L["DisplayName:PhoneNumber"]}")" 
+                @bind-Keyword="@_keyword" SearchAsync="@_grid.Reload" />
         </RadzenStack>
     </RadzenStack>
 </RadzenCard>
@@ -27,38 +28,38 @@
                 Count="@_totalCount" IsLoading="@_isLoading">    
     <Columns>
         <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Id)" Title="ID" Width="80px" Visible="false" />
-        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.UserName)" Title="用户名" Width="160px" />
-        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Email)" Title="邮箱" Width="160px" />
-        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="手机号码" Width="160px" />
-        <RadzenDataGridColumn Title="启用" Width="60px" Filterable="false" Sortable="false">
+        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.UserName)" Title="@L["DisplayName:UserName"]" Width="160px" />
+        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.Email)" Title="@L["DisplayName:Email"]" Width="160px" />
+        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.PhoneNumber)" Title="@L["DisplayName:PhoneNumber"]" Width="160px" />
+        <RadzenDataGridColumn Title="@L["DisplayName:IsActive"]" Width="60px" Filterable="false" Sortable="false">
             <Template>
                 <BooleanIcon Value="@context.IsActive" />
                 @* <RadzenSwitch Value="@context.IsActive"  Disabled="true" Name="False" /> *@
                 @* <RadzenCheckBox TValue="bool" Value="@(context.IsActive)" ReadOnly="true" /> *@
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn Title="账户锁定" Width="80px" Filterable="false" Sortable="false">
+        <RadzenDataGridColumn Title="@L["DisplayName:LockoutEnabled"]" Width="80px" Filterable="false" Sortable="false">
             <Template>
                 <BooleanIcon Value="@context.LockoutEnabled" />
                 @* <RadzenCheckBox TValue="bool" Value="@(context.LockoutEnabled)" ReadOnly="true" /> *@
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.CreationTime)" Filterable="false" Title="添加时间" Width="160px" />
-        <RadzenDataGridColumn Title="操作" Width="160px" Filterable="false" Sortable="false">
+        <RadzenDataGridColumn Property="@nameof(IdentityUserDto.CreationTime)" Filterable="false" Title="@L["CreationTime"]" Width="160px" />
+        <RadzenDataGridColumn Title="@L["Actions"]" Width="160px" Filterable="false" Sortable="false">
             <Template>
                 @if (HasUpdatePermission)
                 {
-                    <RadzenButton Icon="edit" title="编辑" ButtonStyle="ButtonStyle.Success"
-                                  Click="@(async () => await OpenEditDialogAsync<Edit>("编辑用户", context, SetDialogOptions))" />
+                    <RadzenButton Icon="edit" title="@L["Edit"]" ButtonStyle="ButtonStyle.Success"
+                                  Click="@(async () => await OpenEditDialogAsync<Edit>(@L["Edit"], context, SetDialogOptions))" />
                 }
                 @if (HasManagePermissionsPermission)
                 {
-                    <RadzenButton Icon="productivity" title="权限" ButtonStyle="ButtonStyle.Warning"
+                    <RadzenButton Icon="productivity" title="@L["Permissions"]" ButtonStyle="ButtonStyle.Warning"
                                   Click="@(async () => await OpenAssignPermissionDialog(context))" />
                 }
                 @if (context.UserName != "admin" && HasDeletePermission)
                 {
-                    <RadzenButton Icon="delete" title="删除" ButtonStyle="ButtonStyle.Danger"
+                    <RadzenButton Icon="delete" title="@L["Delete"]" ButtonStyle="ButtonStyle.Danger"
                                   Click=@(async () => await OpenDeleteConfirmDialogAsync(context.Id, L["Delete"], L["UserDeletionConfirmationMessage",context.UserName])) />
                 }
             </Template>

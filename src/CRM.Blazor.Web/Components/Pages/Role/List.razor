@@ -4,7 +4,7 @@
 @attribute [Authorize(IdentityPermissions.Roles.Default)]
 @inherits AbpCrudPageBase<IIdentityRoleAppService, IdentityRoleDto, Guid, GetIdentityRolesInput, IdentityRoleCreateDto, IdentityRoleUpdateDto>
 
-<PageTitle>角色列表</PageTitle>
+<PageTitle>@L["Roles"]</PageTitle>
 
 <RadzenCard class="rz-my-6">
     <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Start" Wrap="FlexWrap.Wrap">
