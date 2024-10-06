@@ -72,7 +72,7 @@ public partial class List
     async Task OpenAssignPermissionDialog(IdentityUserDto user)
     {
         await DialogService.OpenAsync<Role.Permission>(
-            $"∑÷≈‰»®œﬁ - {user.UserName}",
+            $"{L["Permissions"]} - {user.UserName}",
             parameters: new Dictionary<string, object>()
             {
                 { "ProviderName", "U" },

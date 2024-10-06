@@ -1,6 +1,7 @@
 ﻿@using Volo.Abp.AspNetCore.Components
 @using Volo.Abp.AspNetCore.Components.Web.Configuration
 @using Volo.Abp.PermissionManagement
+@using Volo.Abp.PermissionManagement.Localization
 @inject IPermissionAppService PermissionAppService
 @inject ICurrentApplicationConfigurationCacheResetService CacheResetService
 @inject NotificationService NotificationService
@@ -9,7 +10,7 @@
 
 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start">
     <RadzenCheckBox TValue="bool" Name="GrantAll" Disabled="_selectAllDisabled" Value="@(_groups.All(x=>x.GrantAll))" ValueChanged="GrantAll" />
-    <RadzenLabel Text="授予所有权限" Component="GrantAll" />
+    <RadzenLabel Text="@L["SelectAllInAllTabs"]" Component="GrantAll" />
 </RadzenStack>
 <RadzenStack Orientation="Orientation.Vertical" Gap="0" class="rz-pt-1"
              Style="border-top: var(--rz-grid-cell-border); min-height: 2rem; max-height: 12rem; overflow: auto;" />
@@ -21,7 +22,7 @@
             <RadzenTabsItem Text="@GetTabShowName(item)">
                 <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.Start">
                     <RadzenCheckBox TValue="bool" Name="@item.DisplayName" @bind-Value="@item.GrantAll" Disabled="IsPermissionGroupDisabled(item)" />
-                    <RadzenLabel Text="全选" Component="@item.DisplayName" />
+                    <RadzenLabel Text="@L["SelectAllInThisTab"]" Component="@item.DisplayName" />
                 </RadzenStack>
                 <RadzenStack Orientation="Orientation.Vertical" Gap="0" class="rz-pt-1" 
                             Style="border-top: var(--rz-grid-cell-border); min-height: 2rem; max-height: 12rem; overflow: auto;" />
@@ -52,8 +53,8 @@
 
 <div class="dialog-footer">
     <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.Right">
-        <RadzenButton Icon="save" Click="SaveAsync" Text="保存" ButtonStyle="ButtonStyle.Primary" />
-        <RadzenButton Icon="cancel" Click="()=>DialogService.Close(false)" Text="取消" ButtonStyle="ButtonStyle.Light" />
+        <RadzenButton Icon="save" Click="SaveAsync" Text="@L["Save"]" ButtonStyle="ButtonStyle.Primary" />
+        <RadzenButton Icon="cancel" Click="()=>DialogService.Close(false)" Text="@L["Cancel"]" ButtonStyle="ButtonStyle.Light" />
     </RadzenStack>
 </div>
 
@@ -67,6 +68,11 @@
     List<PermissionGrantInfoDto> _disabledPermissions = [];
 
     bool _selectAllDisabled;
+
+    public Permission()
+    {
+        LocalizationResource = typeof(AbpPermissionManagementResource);
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -215,8 +221,8 @@
                 var result = await DialogService.Confirm(L["SaveWithoutAnyPermissionsWarningMessage"], "保存权限",
                     new ConfirmOptions()
                         {
-                            OkButtonText = "确定",
-                            CancelButtonText = "取消"
+                            OkButtonText = L["Yes"],
+                            CancelButtonText = L["Cancel"]
                         });
 
                 if (result == false)
@@ -228,7 +234,7 @@
             await PermissionAppService.UpdateAsync(ProviderName, ProviderKey, updateDto);
             await CacheResetService.ResetAsync();
 
-            NotificationService.Success("保存成功");
+            NotificationService.Success(L["SuccessfullySaved"]);
             DialogService.Close(true);
         }
         catch (Exception ex)
