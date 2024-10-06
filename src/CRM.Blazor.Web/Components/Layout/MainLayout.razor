@@ -36,6 +36,7 @@
                                 <RadzenGravatar Email="user@example.com" Style="width:24px;height:24px;"></RadzenGravatar>
                             </Template>
                             <ChildContent>
+                                <RadzenProfileMenuItem Text="我的账户" Icon="person" Path="/account/manage" ></RadzenProfileMenuItem>
                                 <RadzenProfileMenuItem Text="退出" Icon="logout" Path="/account/logout" ></RadzenProfileMenuItem>
                             </ChildContent>
                         </RadzenProfileMenu>
@@ -291,7 +292,7 @@
 
     void FilterPanelMenu(ChangeEventArgs args)
     {
-        var term = args.Value.ToString();
+        var term = args.Value?.ToString();
 
         menus = string.IsNullOrEmpty(term) ? MenuService.Menus : MenuService.Filter(term);
     }
@@ -301,7 +302,7 @@
         ThemeService.SetTheme($"{value}");
     }
 
-    void WcagColorsTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, ds =>
+    void WcagColorsTooltip(ElementReference elementReference, TooltipOptions? options = null) => TooltipService.Open(elementReference, ds =>
 @<div Style="width: 280px; white-space: normal; padding: 20px;">
     <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H4" Style="color: currentColor;">WCAG Compliant Colors</RadzenText>
     <RadzenText TextStyle="TextStyle.Body2" Style="color: currentColor;">Enable to preview themes with WCAG 2.2 AA compliant color swatches.</RadzenText>
@@ -310,13 +311,13 @@
     </RadzenStack>
 </div>, options);
 
-    void RtlTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, ds =>
+    void RtlTooltip(ElementReference elementReference, TooltipOptions? options = null) => TooltipService.Open(elementReference, ds =>
 @<div Style="width: 280px; white-space: normal; padding: 20px;">
     <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H4" Style="color: currentColor;">RTL directionality</RadzenText>
     <RadzenText TextStyle="TextStyle.Body2" Style="color: currentColor;">Use right to left direction for languages that are written from the right to the left (like Arabic).</RadzenText>
 </div>, options);
 
-    void PremiumThemesTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, ds =>
+    void PremiumThemesTooltip(ElementReference elementReference, TooltipOptions? options = null) => TooltipService.Open(elementReference, ds =>
 @<div Style="width: 280px; white-space: normal; padding: 20px;">
     <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H4" Style="color: currentColor;">Use Premium Themes</RadzenText>
     <RadzenText TextStyle="TextStyle.Body2" Style="color: currentColor;">Premium themes can be used with an active Radzen Professional or Enterprise subscription.</RadzenText>
@@ -326,7 +327,7 @@
     </RadzenStack>
 </div>, options);
 
-    void FreeThemesTooltip(ElementReference elementReference, TooltipOptions options = null) => TooltipService.Open(elementReference, ds =>
+    void FreeThemesTooltip(ElementReference elementReference, TooltipOptions? options = null) => TooltipService.Open(elementReference, ds =>
 @<div Style="width: 200px; white-space: normal; padding: 20px;">
     <RadzenText TextStyle="TextStyle.H6" TagName="TagName.H4" Style="color: currentColor;">Use Free Themes</RadzenText>
     <RadzenText TextStyle="TextStyle.Body2" Style="color: currentColor;">These themes are free for commercial use.</RadzenText>
