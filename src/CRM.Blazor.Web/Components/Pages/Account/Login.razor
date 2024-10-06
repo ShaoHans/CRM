@@ -44,13 +44,7 @@
 
         if (!string.IsNullOrWhiteSpace(Error))
         {
-            NotificationService.Notify(new NotificationMessage
-            {
-                Severity = NotificationSeverity.Error,
-                Summary = "登录失败",
-                Detail = Error,
-                Duration = 3000
-            });
+            NotificationService.Error(Error);
         }
 
         if (authenticationState is not null)
