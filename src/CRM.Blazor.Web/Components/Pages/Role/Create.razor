@@ -12,7 +12,7 @@
             </RadzenColumn>
             <RadzenColumn Size="12" SizeMD="8">
                 <RadzenTextBox Name="Name" @bind-Value=@DialogFromOption.Model.Name Style="display: block; width: 100%;" MaxLength="IdentityRoleConsts.MaxNameLength" />
-                <RadzenRequiredValidator Component="Name" Text="@L["The {0} field is required.",L["DisplayName:RoleName"]]" Style="position: absolute" />
+                <RadzenRequiredValidator Component="Name" Text="@L.Required("DisplayName:RoleName")" Style="position: absolute" />
             </RadzenColumn>
         </RadzenRow>
         <RadzenRow AlignItems="AlignItems.Center" RowGap="0.25rem">
