@@ -8,6 +8,13 @@ public class MenuService
     [
         new Menu
         {
+            Name = "首页",
+            Icon = "home",
+            Path = "/",
+            Children = []
+        },
+        new Menu
+        {
             Name = "身份认证管理",
             Icon = "security_key",
             Children =

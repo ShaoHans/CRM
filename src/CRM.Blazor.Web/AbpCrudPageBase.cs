@@ -5,13 +5,10 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Localization;
 using Radzen;
 using Radzen.Blazor;
-
-using Volo.Abp;
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
 using Volo.Abp.AspNetCore.Components;
 using Volo.Abp.Authorization;
-using Volo.Abp.Identity;
 using Volo.Abp.Localization;
 
 namespace CRM.Blazor.Web;
@@ -228,7 +225,10 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task OpenCreateDialogAsync<TDialog>(string title, Func<DialogOptions>? func = null)
+    protected virtual async Task OpenCreateDialogAsync<TDialog>(
+        string title,
+        Func<DialogOptions>? func = null
+    )
         where TDialog : ComponentBase
     {
         var dialogFromOption = new DialogFromOption<TCreateInput>
@@ -244,12 +244,14 @@ public abstract class AbpCrudPageBase<
             {
                 { "DialogFromOption", dialogFromOption },
             },
-            options: func is not null ? func() : new DialogOptions()
-            {
-                Draggable = true,
-                Width = "600px",
-                Height = "450px"
-            }
+            options: func is not null
+                ? func()
+                : new DialogOptions()
+                {
+                    Draggable = true,
+                    Width = "600px",
+                    Height = "450px"
+                }
         );
 
         if (result)
@@ -282,7 +284,11 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task OpenEditDialogAsync<TDialog>(string title, TGetListOutputDto dto, Func<DialogOptions>? func = null)
+    protected virtual async Task OpenEditDialogAsync<TDialog>(
+        string title,
+        TGetListOutputDto dto,
+        Func<DialogOptions>? func = null
+    )
         where TDialog : ComponentBase
     {
         var dialogFromOption = new DialogFromOption<TUpdateInput>
@@ -299,12 +305,14 @@ public abstract class AbpCrudPageBase<
             {
                 { "DialogFromOption", dialogFromOption }
             },
-            options: func is not null ? func() : new DialogOptions()
-            {
-                Draggable = true,
-                Width = "600px",
-                Height = "450px"
-            }
+            options: func is not null
+                ? func()
+                : new DialogOptions()
+                {
+                    Draggable = true,
+                    Width = "600px",
+                    Height = "450px"
+                }
         );
 
         if (result)
@@ -329,12 +337,20 @@ public abstract class AbpCrudPageBase<
         }
     }
 
-    protected virtual async Task OpenDeleteConfirmDialogAsync(TKey id, string title = "Confirm", string confirm = "Confirm?")
+    protected virtual async Task OpenDeleteConfirmDialogAsync(
+        TKey id,
+        string title = "Confirm",
+        string confirm = "Confirm?"
+    )
     {
         var result = await DialogService.Confirm(
             message: confirm,
             title: title,
-            options: new ConfirmOptions() { OkButtonText = L["Yes"], CancelButtonText = L["Cancel"] }
+            options: new ConfirmOptions()
+            {
+                OkButtonText = L["Yes"],
+                CancelButtonText = L["Cancel"]
+            }
         );
 
         if (result == true)
