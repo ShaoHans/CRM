@@ -1,0 +1,57 @@
+﻿@inject MenuService MenuService
+
+<RadzenSidebar @bind-Expanded="@SidebarExpanded" class="demos-sidebar" style="display: flex; flex-direction: column">
+    <div style="padding: 1rem">
+        <RadzenTextBox id="find" Placeholder="Find menu ..." type="search" @oninput="@FilterPanelMenu" style="width: 100%" class="rz-search-input" aria-label="find" />
+    </div>
+    <div style="flex: 1; overflow: auto">
+        <RadzenPanelMenu Match="NavLinkMatch.Prefix">
+            @foreach (var category in menus)
+            {
+                <NavigationItem @key=category @bind-Expanded=@category.Expanded Menu=@category>
+                    @if (category.Children != null)
+                    {
+                        @foreach (var example in category.Children)
+                        {
+                            if (example.Children != null)
+                            {
+                                <NavigationItem @key=example @bind-Expanded=@example.Expanded Menu=@example>
+                                    @foreach (var child in example.Children)
+                                    {
+                                        <NavigationItem @key=child @bind-Expanded=@child.Expanded Menu=@child />
+                                    }
+                                </NavigationItem>
+                            }
+                            else
+                            {
+                                <NavigationItem @key=example @bind-Expanded=@example.Expanded Menu=@example />
+                            }
+                        }
+                    }
+                </NavigationItem>
+            }
+        </RadzenPanelMenu>
+    </div>
+</RadzenSidebar>
+
+@code {
+    IEnumerable<Menu> menus = [];
+    [Parameter]
+    public bool SidebarExpanded { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> SidebarExpandedChanged { get; set; }
+
+    protected override Task OnInitializedAsync()
+    {
+        menus = MenuService.Menus;
+        return Task.CompletedTask;
+    }
+
+    void FilterPanelMenu(ChangeEventArgs args)
+    {
+        var term = args.Value?.ToString();
+
+        menus = string.IsNullOrEmpty(term) ? MenuService.Menus : MenuService.Filter(term);
+    }
+}
