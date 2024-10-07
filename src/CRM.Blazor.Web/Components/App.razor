@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="Content-Security-Policy"
+    @* <meta http-equiv="Content-Security-Policy"
           content="base-uri 'self';
         default-src 'self' unsafe-inline http://localhost:* ws://localhost:*;
         connect-src 'self' https: wss: http://localhost:* ws://localhost:*;
@@ -17,13 +17,13 @@
         style-src 'self' 'unsafe-inline' cdnjs.cloudflare.com;
         font-src 'self' data: cdnjs.cloudflare.com;
         frame-src www.youtube.com platform.twitter.com platform.linkedin.com www.linkedin.com;
-        upgrade-insecure-requests;">
+        upgrade-insecure-requests;"> *@
     <base href="/" />
     <link href="css/site.css" rel="stylesheet" />
     <HeadOutlet @rendermode="InteractiveServer" />
     <link rel="preload" href="/fonts/MaterialSymbolsOutlined.woff2" as="font" type="font/woff2">
     <RadzenTheme Theme="material3-dark" @rendermode="InteractiveServer" />
-    <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.min.css">
+    @* <link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.min.css"> *@
 </head>
 <body class="rz-scrollbars">
     <Routes @rendermode="InteractiveServer" />
@@ -47,11 +47,11 @@
     <script src="_framework/blazor.web.js"></script>
     <script async src="js/highlight.pack.js"></script>
     <script src="_content/Radzen.Blazor/Radzen.Blazor.js?v=@(typeof(Radzen.Colors).Assembly.GetName().Version)"></script>
-    <script defer data-domain="blazor.radzen.com" src="https://analytics.radzen.com/js/plausible.js"></script>
+    @* <script defer data-domain="blazor.radzen.com" src="https://analytics.radzen.com/js/plausible.js"></script>
     <script>var require = { paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } }</script>
     <script async src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
     <script async src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.nls.js"></script>
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.js"></script>
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.js"></script> 
     <script>
         var instances = {};
         function createEditor(element, id, ref, options) {
@@ -67,6 +67,6 @@
             var text = instances[id].getValue();
             navigator.clipboard.writeText(text);
         }
-    </script>
+    </script>*@
 </body>
 </html>
