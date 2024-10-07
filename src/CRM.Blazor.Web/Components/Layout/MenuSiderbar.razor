@@ -6,25 +6,25 @@
     </div>
     <div style="flex: 1; overflow: auto">
         <RadzenPanelMenu Match="NavLinkMatch.Prefix">
-            @foreach (var category in menus)
+            @foreach (var first in menus)
             {
-                <NavigationItem @key=category @bind-Expanded=@category.Expanded Menu=@category>
-                    @if (category.Children != null)
+                <NavigationItem @key=first @bind-Expanded=@first.Expanded Menu=@first>
+                    @if (first.Children != null)
                     {
-                        @foreach (var example in category.Children)
+                        @foreach (var second in first.Children)
                         {
-                            if (example.Children != null)
+                            if (second.Children != null)
                             {
-                                <NavigationItem @key=example @bind-Expanded=@example.Expanded Menu=@example>
-                                    @foreach (var child in example.Children)
+                                <NavigationItem @key=second @bind-Expanded=@second.Expanded Menu=@second>
+                                    @foreach (var third in second.Children)
                                     {
-                                        <NavigationItem @key=child @bind-Expanded=@child.Expanded Menu=@child />
+                                        <NavigationItem @key=third @bind-Expanded=@third.Expanded Menu=@third />
                                     }
                                 </NavigationItem>
                             }
                             else
                             {
-                                <NavigationItem @key=example @bind-Expanded=@example.Expanded Menu=@example />
+                                <NavigationItem @key=second @bind-Expanded=@second.Expanded Menu=@second />
                             }
                         }
                     }

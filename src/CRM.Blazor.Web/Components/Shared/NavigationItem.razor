@@ -18,10 +18,10 @@ else
 }
 @code {
     [Parameter]
-    public Menu Menu { get; set; }
+    public Menu Menu { get; set; } = new();
 
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment ChildContent { get; set; } = default!;
 
     [Parameter]
     public bool Expanded
@@ -36,7 +36,7 @@ else
         }
     }
 
-    string GetUrl()
+    string? GetUrl()
     {
         return Menu.Path == null ? Menu.Path : $"{Menu.Path}{new Uri(navigationManager.Uri).Query}";
     }
